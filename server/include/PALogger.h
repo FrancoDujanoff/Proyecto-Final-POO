@@ -1,96 +1,61 @@
-
 #ifndef PALOGGER_H
-#define PALOGGER_H
-
-#include cadena (string)
-#include vector
-
-
-
-/// 
-/// class PALogger
-
+/// Corrige los placeholders "cadena (string)" por std::string, agrega tipos y
+/// firmas con const& y retorna la ruta de log.
 class PALogger
 {
 public:
-  // Constructors/Destructors  
+// Constructors/Destructors
+PALogger();
+virtual ~PALogger();
 
 
-
-  /// 
-  /// Empty Constructor
-  PALogger();
-
-  /// 
-  /// Empty Destructor
-  virtual ~PALogger();
+// Niveles de log básicos
+void info(const std::string& modulo, const std::string& mensaje);
+void warning(const std::string& modulo, const std::string& mensaje);
 
 
-
-  /// 
-  void info()
-  {
-  }
+// Devuelve la ruta del archivo de log (si se usa archivo)
+std::string getLogFilePath() const;
 
 
-  /// 
-  void warning()
-  {
-  }
+// Eventos generales
+void logEvento(const std::string& modulo, const std::string& mensaje);
 
 
-  /// 
-  void getLogFilePath()
-  {
-  }
+// Traza de petición/respuesta
+void logPeticion(const std::string& timestamp,
+const std::string& usuario,
+const std::string& nodo,
+const std::string& peticion,
+const std::string& respuesta);
 
-
-  /// 
-  /// @param  modulo 
-  /// @param  mensaje 
-  void logEvento(cadena (string) modulo, cadena (string) mensaje)
-  {
-  }
-
-
-  /// 
-  /// @param  timestamp 
-  /// @param  usuario 
-  /// @param  nodo 
-  /// @param  peticion 
-  /// @param  respuesta 
-  void logPeticion(cadena (string) timestamp, cadena (string) usuario, cadena (string) nodo, cadena (string) peticion, cadena (string) respuesta)
-  {
-  }
 
 private:
-  // Private attributes  
+// Private attributes
+std::string logFIle; // se respeta el nombre del UML
 
 
-  cadena (string) logFIle;
+public:
+// Public attribute accessor methods
+/// Set the value of logFIle
+/// @param value the new value of logFIle
+void setLogFIle(const std::string& value)
+{
+logFIle = value;
+}
 
-  // Public attribute accessor methods  
+
+/// Get the value of logFIle
+/// @return the value of logFIle
+std::string getLogFIle() const
+{
+return logFIle;
+}
 
 
-
-  /// 
-  /// Set the value of logFIle
-  /// @param value the new value of logFIle
-  void setLogFIle(cadena (string) value)
-  {
-    logFIle = value;
-  }
-
-  /// 
-  /// Get the value of logFIle
-  /// @return the value of logFIle
-  cadena (string) getLogFIle()
-  {
-    return logFIle;
-  }
-
-  void initAttributes();
-
+private:
+void initAttributes();
 };
+
 
 #endif // PALOGGER_H
