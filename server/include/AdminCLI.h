@@ -1,77 +1,28 @@
-
 #ifndef ADMINCLI_H
 #define ADMINCLI_H
 
-#include cadena (string)
-#include vector
+#include <string>
+#include <iostream>
+ 
+class ControladorGeneral; //Forma para declarar una clase sin incluir su header, y para no generar un bucle.
 
+using namespace std;
 
-
-/// 
-/// class AdminCLI
-
-class AdminCLI
-{
-public:
-  // Constructors/Destructors  
-
-
-
-  /// 
-  /// Empty Constructor
-  AdminCLI();
-
-  /// 
-  /// Empty Destructor
-  virtual ~AdminCLI();
-
-
-
-  /// 
-  void iniciarSesion()
-  {
-  }
-
-
-  /// 
-  void mostrarMenu()
-  {
-  }
-
-
-  /// 
-  void procesarEntrada()
-  {
-  }
-
+class AdminCLI {
 private:
-  // Private attributes  
+    ControladorGeneral* refControladorGeneral; 
 
+    void mostrarEstadoGeneral() const;
+    void solicitarCredenciales();
+    void mostrarMenuPrincipal() const;
+    void procesarOpcion(char opcion);
+    
+    void menuMovimientoManual();
 
-  cadena (string) referenciaControladorGeneral;
+public:
+    AdminCLI(ControladorGeneral* controlador);
 
-  // Public attribute accessor methods  
-
-
-
-  /// 
-  /// Set the value of referenciaControladorGeneral
-  /// @param value the new value of referenciaControladorGeneral
-  void setReferenciaControladorGeneral(cadena (string) value)
-  {
-    referenciaControladorGeneral = value;
-  }
-
-  /// 
-  /// Get the value of referenciaControladorGeneral
-  /// @return the value of referenciaControladorGeneral
-  cadena (string) getReferenciaControladorGeneral()
-  {
-    return referenciaControladorGeneral;
-  }
-
-  void initAttributes();
-
+    void iniciarSesion(); //Llama a todos los metodos privados
 };
 
-#endif // ADMINCLI_H
+#endif

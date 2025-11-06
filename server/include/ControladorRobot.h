@@ -1,165 +1,41 @@
-
 #ifndef CONTROLADORROBOT_H
 #define CONTROLADORROBOT_H
 
-#include cadena (string)
-#include vector
+#include <string>
+#include <memory> 
+#include "Robot.h"
+#include "PuertoSerie.h"
 
+using namespace std;
 
-
-/// 
-/// class ControladorRobot
-
-class ControladorRobot
-{
-public:
-  // Constructors/Destructors  
-
-
-
-  /// 
-  /// Empty Constructor
-  ControladorRobot();
-
-  /// 
-  /// Empty Destructor
-  virtual ~ControladorRobot();
-
-
-
-  /// 
-  void conectarRobot()
-  {
-  }
-
-
-  /// 
-  void desconectarRobot()
-  {
-  }
-
-
-  /// 
-  /// @param  estado 
-  void habilitarMotores(bool estado)
-  {
-  }
-
-
-  /// 
-  /// @param  estado 
-  void ActivarEfector(bool estado)
-  {
-  }
-
-
-  /// 
-  /// @param  x 
-  /// @param  y 
-  /// @param  z 
-  /// @param  velocidad 
-  void moveAPosicion(float x, float y, float z, float velocidad)
-  {
-  }
-
-
-  /// 
-  /// @param  comando 
-  void enviarComando(cadena (string) comando)
-  {
-  }
-
-
-  /// 
-  void solicitarReporteEstado()
-  {
-  }
-
-
-  /// 
-  void ejecutarArchivoGCode()
-  {
-  }
-
+class ControladorRobot {
 private:
-  // Private attributes  
+    unique_ptr<Robot> robot; 
 
+    unique_ptr<PuertoSerie> puertoSerie;
 
-  Robot Robot;
-  PuertoSerie PuertoSerie;
-  Robot nuevo_atributo;
-  PuertoSerie nuevo_atributo_1;
+    void parsearRespuestaYActualizar(const string& respuesta); 
 
-  // Public attribute accessor methods  
+    GestorDeReportes* gestorDeReportes;
 
+public:
+    
+    ControladorRobot(const string& puerto, int baudrate, GestorDeReportes* reportes);
 
+    bool conectarRobot();
+    void desconectarRobot();
 
-  /// 
-  /// Set the value of Robot
-  /// @param value the new value of Robot
-  void setRobot(Robot value)
-  {
-    Robot = value;
-  }
+    bool habilitarMotores(bool estado);      
+    bool activarEfector(bool estado);        
+    bool moverAPosicion(float x, float y, float z, float velocidad); 
 
-  /// 
-  /// Get the value of Robot
-  /// @return the value of Robot
-  Robot getRobot()
-  {
-    return Robot;
-  }
+    string enviarComando(const string& comando);
 
-  /// 
-  /// Set the value of PuertoSerie
-  /// @param value the new value of PuertoSerie
-  void setPuertoSerie(PuertoSerie value)
-  {
-    PuertoSerie = value;
-  }
+    string solicitarReporteEstadoRobot(); 
 
-  /// 
-  /// Get the value of PuertoSerie
-  /// @return the value of PuertoSerie
-  PuertoSerie getPuertoSerie()
-  {
-    return PuertoSerie;
-  }
+    const Robot* getRobot() const { return robot.get(); } //Para obtener el estado actual del robot y sin modificarlo
 
-  /// 
-  /// Set the value of nuevo_atributo
-  /// @param value the new value of nuevo_atributo
-  void setNuevo_atributo(Robot value)
-  {
-    nuevo_atributo = value;
-  }
-
-  /// 
-  /// Get the value of nuevo_atributo
-  /// @return the value of nuevo_atributo
-  Robot getNuevo_atributo()
-  {
-    return nuevo_atributo;
-  }
-
-  /// 
-  /// Set the value of nuevo_atributo_1
-  /// @param value the new value of nuevo_atributo_1
-  void setNuevo_atributo_1(PuertoSerie value)
-  {
-    nuevo_atributo_1 = value;
-  }
-
-  /// 
-  /// Get the value of nuevo_atributo_1
-  /// @return the value of nuevo_atributo_1
-  PuertoSerie getNuevo_atributo_1()
-  {
-    return nuevo_atributo_1;
-  }
-
-  void initAttributes();
-
+    bool ejecutarBloqueGCode(const string& contenidoGCode);
 };
 
-#endif // CONTROLADORROBOT_H
+#endif

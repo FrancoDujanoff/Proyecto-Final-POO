@@ -1,117 +1,40 @@
-
 #ifndef PUERTOSERIE_H
 #define PUERTOSERIE_H
 
-#include cadena (string)
+#include <string>
+#include <termios.h> 
 
+using namespace std;
 
-/// 
-/// class PuertoSerie
-
-class PuertoSerie
-{
-public:
-  // Constructors/Destructors  
-
-
-
-  /// 
-  /// Empty Constructor
-  PuertoSerie();
-
-  /// 
-  /// Empty Destructor
-  virtual ~PuertoSerie();
-
-
-
-  /// 
-  void abrir()
-  {
-  }
-
-
-  /// 
-  void cerrar()
-  {
-  }
-
-
-  /// 
-  /// @param  comando 
-  void escribir(cadena (string) comando)
-  {
-  }
-
-
-  /// 
-  /// @return cadena (string)
-  cadena (string) leerDatos()
-  {
-  }
+class PuertoSerie {
 
 private:
-  // Private attributes  
+    
+    string puerto;
+    int baudrate;
+    bool estado;
+    int fd; // Es el identificador único que se utiliza para interactuar con el hardware del puerto serie a través del sistema operativo
+    
+    static speed_t mapBaud(int baud);
+    string leerHastaNLineas(int n, int idle_timeout_ms, int overall_timeout_ms);
+    void drenarHastaInactividad(int idle_timeout_ms, int overall_timeout_ms);
 
+public:
 
-  cadena (string) puerto;
-  int baudrate;
-  bool estado;
+    PuertoSerie();
+    PuertoSerie(const string& dev, int baud);
+    ~PuertoSerie();
 
-  // Public attribute accessor methods  
+    void abrir();
+    void cerrar();
 
+    void escribir(const string& comando); 
 
+    string leerDatos(); 
 
-  /// 
-  /// Set the value of puerto
-  /// @param value the new value of puerto
-  void setPuerto(cadena (string) value)
-  {
-    puerto = value;
-  }
-
-  /// 
-  /// Get the value of puerto
-  /// @return the value of puerto
-  cadena (string) getPuerto()
-  {
-    return puerto;
-  }
-
-  /// 
-  /// Set the value of baudrate
-  /// @param value the new value of baudrate
-  void setBaudrate(int value)
-  {
-    baudrate = value;
-  }
-
-  /// 
-  /// Get the value of baudrate
-  /// @return the value of baudrate
-  int getBaudrate()
-  {
-    return baudrate;
-  }
-
-  /// 
-  /// Set the value of estado
-  /// @param value the new value of estado
-  void setEstado(bool value)
-  {
-    estado = value;
-  }
-
-  /// 
-  /// Get the value of estado
-  /// @return the value of estado
-  bool getEstado()
-  {
-    return estado;
-  }
-
-  void initAttributes();
-
+    void setPuerto(const string& dev);
+    void setBaudrate(int baud);
+    bool pregEstado() const { return estado; }
 };
 
-#endif // PUERTOSERIE_H
+#endif
