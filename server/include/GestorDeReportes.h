@@ -1,95 +1,41 @@
+#ifndef GESTOR_DE_REPORTES_H
+#define GESTOR_DE_REPORTES_H
 
-#ifndef GESTORDEREPORTES_H
-#define GESTORDEREPORTES_H
+#include <string>
+#include <vector>
+#include <utility>
+#include <optional>
 
-#include cadena (string)
-#include vector
+class PALogger;
+class BaseDeDatos;
+class UsuarioServidor;
 
-
-
-/// 
-/// class GestorDeReportes
-
-class GestorDeReportes
-{
-public:
-  // Constructors/Destructors  
-
-
-
-  /// 
-  /// Empty Constructor
-  GestorDeReportes();
-
-  /// 
-  /// Empty Destructor
-  virtual ~GestorDeReportes();
-
-
-
-  /// 
-  /// @param  usuario 
-  void generarReporteDeActividad(Usuario usuario)
-  {
-  }
-
-
-  /// 
-  void generarReporteAdmin()
-  {
-  }
-
-
-  /// 
-  void generarReporteDeLog()
-  {
-  }
-
-private:
-  // Private attributes  
-
-
-  cadena (string) referenciaLogger;
-  cadena (string) referenciaControladorRobot;
-
-  // Public attribute accessor methods  
-
-
-
-  /// 
-  /// Set the value of referenciaLogger
-  /// @param value the new value of referenciaLogger
-  void setReferenciaLogger(cadena (string) value)
-  {
-    referenciaLogger = value;
-  }
-
-  /// 
-  /// Get the value of referenciaLogger
-  /// @return the value of referenciaLogger
-  cadena (string) getReferenciaLogger()
-  {
-    return referenciaLogger;
-  }
-
-  /// 
-  /// Set the value of referenciaControladorRobot
-  /// @param value the new value of referenciaControladorRobot
-  void setReferenciaControladorRobot(cadena (string) value)
-  {
-    referenciaControladorRobot = value;
-  }
-
-  /// 
-  /// Get the value of referenciaControladorRobot
-  /// @return the value of referenciaControladorRobot
-  cadena (string) getReferenciaControladorRobot()
-  {
-    return referenciaControladorRobot;
-  }
-
-  void initAttributes();
-
+// NOTA: NivelLog no está definido en los archivos que me diste.
+// Posiblemente falte un enum en PALogger.h o un archivo común.
+struct FiltrosReporteAdmin {
+    std::optional<int> idUsuario;
+    std::optional<NivelLog> minNivelLog;
+    std::optional<std::string> contiene;
+    std::optional<std::string> desdeISO;
+    std::optional<std::string> hastaISO;
 };
 
-#endif // GESTORDEREPORTES_H
+class GestorDeReportes {
+private:
+    PALogger& logger;
+    BaseDeDatos& bd;
+
+public:
+    explicit GestorDeReportes(PALogger& l, BaseDeDatos& b);
+
+    std::vector<std::string> generarReporteActividad(const UsuarioServidor& usuario);
+
+    std::vector<std::string> generarReporteAdmin(const UsuarioServidor& admin, const FiltrosReporteAdmin& filtros);
+
+    std::vector<std::string> generarReporteLog(const UsuarioServidor& admin, const FiltrosReporteAdmin& filtros);
+
+    GestorDeReportes(const GestorDeReportes&) = delete;
+    GestorDeReportes& operator=(const GestorDeReportes&) = delete;
+};
+
+#endif // GESTOR_DE_REPORTES_H
