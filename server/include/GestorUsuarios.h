@@ -2,28 +2,13 @@
 #ifndef GESTORUSUARIOS_H
 #define GESTORUSUARIOS_H
 
-#include cadena (string)
+#include <string>
 
-
-/// 
-/// class GestorUsuarios
-
-class GestorUsuarios
-{
+class GestorUsuarios {
 public:
-  // Constructors/Destructors  
-
-
-
-  /// 
-  /// Empty Constructor
   GestorUsuarios();
-
-  /// 
-  /// Empty Destructor
   virtual ~GestorUsuarios();
-
-
+  // Implementación pendiente: gestión de usuarios (CRUD, roles, permisos)
 };
 
 #endif // GESTORUSUARIOS_H

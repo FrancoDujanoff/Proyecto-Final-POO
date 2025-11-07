@@ -132,7 +132,7 @@ bool ControladorRobot::activarEfector(bool estado) {
     string respuesta = enviarComando(comando);
 
     if (respuesta.find("INFO: GRIPPER") != string::npos) {
-        robot->setEstadoEfectorFinal(estado);
+    robot->setEstadoEfector(estado);
         return true;
     }
     return false;

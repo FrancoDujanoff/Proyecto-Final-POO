@@ -10,6 +10,10 @@
 static std::optional<std::chrono::system_clock::time_point> parseISO8601(const std::optional<std::string>& s) {
     if (!s.has_value()) return std::nullopt;
     std::tm tm{};
+
+
+
+
     std::istringstream iss(*s);
     if (s->size() == 10)
         iss >> std::get_time(&tm, "%Y-%m-%d");
@@ -60,15 +64,13 @@ std::vector<std::string> GestorDeReportes::generarReporteLog(const UsuarioServid
         out.push_back("[PERMISO DENEGADO] Sólo un administrador puede ver el log.");
         return out;
     }
-    // NOTA: FiltroLog no está definido en los archivos que me diste.
-    FiltroLog fLog;
+    PALogger::FiltroLog fLog;
     fLog.idUsuario = filtros.idUsuario;
     fLog.minNivel = filtros.minNivelLog;
     fLog.contiene = filtros.contiene;
     fLog.desde = parseISO8601(filtros.desdeISO);
     fLog.hasta = parseISO8601(filtros.hastaISO);
 
-    // NOTA: El método 'consultar' y 'formatear' no existen en el PALogger.h que me diste.
     auto entradas = logger.consultar(fLog);
     out.push_back("=== REPORTE ADMIN: LOG DEL SERVIDOR ===");
     for (const auto& e : entradas) {

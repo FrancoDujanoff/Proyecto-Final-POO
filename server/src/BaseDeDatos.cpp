@@ -1,24 +1,8 @@
 #include "BaseDeDatos.h"
 
-// Constructors/Destructors
-
-
-BaseDeDatos::BaseDeDatos()
-{
-}
-
-BaseDeDatos::~BaseDeDatos()
-{
-}
-
-// Methods
-
-
-// Accessor methods
-
-
-
-// Other methods
+// Implementaciones concretas de BaseDeDatos deben proporcionarse en una clase derivada.
+// Este archivo se deja deliberadamente vacío para evitar definiciones duplicadas
+// de constructores/destructores que ya están defaulted en el header.
 
 
 

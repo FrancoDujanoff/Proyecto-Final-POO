@@ -6,7 +6,8 @@
 #include <utility>
 #include <optional>
 
-class PALogger;
+#include "PALogger.h"
+class BaseDeDatos;
 class BaseDeDatos;
 class UsuarioServidor;
 

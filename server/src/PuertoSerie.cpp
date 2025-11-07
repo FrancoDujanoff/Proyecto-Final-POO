@@ -99,7 +99,7 @@ void PuertoSerie::abrir() {
 }
 
 void PuertoSerie::escribir(const string& comando) {
-    if (!abierto || fd < 0) {
+    if (!estado || fd < 0) {
         throw runtime_error("Puerto no abierto para escribir");
     }
     
@@ -110,7 +110,8 @@ void PuertoSerie::escribir(const string& comando) {
     }
 }
 
-void PuertoSerie::drenarHastaInactividad(int idle_timeout_ms, int) {
+void PuertoSerie::drenarHastaInactividad(int idle_timeout_ms, int overall_timeout_ms) {
+    (void) overall_timeout_ms; // actualmente no usado, reservado
     if (!estado || fd < 0) return;
 
     auto ms_to_timeval = [](int ms) {

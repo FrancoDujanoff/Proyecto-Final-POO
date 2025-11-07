@@ -8,6 +8,8 @@
 
 using namespace std;
 
+class GestorDeReportes; // forward declaration
+
 class ControladorRobot {
 private:
     unique_ptr<Robot> robot; 

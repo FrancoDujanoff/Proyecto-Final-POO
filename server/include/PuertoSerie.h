@@ -16,8 +16,6 @@ private:
     int fd; // Es el identificador único que se utiliza para interactuar con el hardware del puerto serie a través del sistema operativo
     
     static speed_t mapBaud(int baud);
-    string leerHastaNLineas(int n, int idle_timeout_ms, int overall_timeout_ms);
-    void drenarHastaInactividad(int idle_timeout_ms, int overall_timeout_ms);
 
 public:
 
@@ -32,9 +30,15 @@ public:
 
     string leerDatos(); 
 
+    // Lectura y drenado expuestos para uso desde ControladorRobot
+    string leerHastaNLineas(int n, int idle_timeout_ms = 200, int overall_timeout_ms = 1000);
+    void drenarHastaInactividad(int idle_timeout_ms = 200, int overall_timeout_ms = 1000);
+
     void setPuerto(const string& dev);
     void setBaudrate(int baud);
     bool pregEstado() const { return estado; }
+    // Alias con nombre más descriptivo usado en el código
+    bool estaAbierto() const { return pregEstado(); }
 };
 
 #endif
