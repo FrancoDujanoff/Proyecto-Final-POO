@@ -25,7 +25,7 @@ void prueba_puerto_serie() {
         cout << "Respuesta recibida:\n---INICIO---\n" << respuesta << "---FIN---\n" << endl;
 
         // 4. Enviar un comando de accion simple
-        ps.escribir("M17\r\n"); // Activar motores
+        ps.escribir("M17\r\n"); // Activar
         cout << "Enviado: M17" << endl;
         respuesta = ps.leerDatos();
         cout << "Respuesta M17:\n" << respuesta << endl; // Espera INFO: MOTORS ENABLED
