@@ -4,7 +4,7 @@
 using namespace std;
 
 void prueba_puerto_serie() {
-    const string PUERTO = "/dev/ttyACM0"; // ¡REEMPLAZAR con el puerto real de tu Arduino!
+    const string PUERTO = getenv("PUERTO_SERIE") ? string(getenv("PUERTO_SERIE")) : "/dev/ttyACM0";
     const int BAUDIOS = 115200;
 
     try {
@@ -35,5 +35,4 @@ void prueba_puerto_serie() {
         cerr << "FALLO CRITICO en PuertoSerie: " << e.what() << endl;
     }
 }
-
-// int main() { prueba_puerto_serie(); return 0; }
+int main() { prueba_puerto_serie(); return 0; }
