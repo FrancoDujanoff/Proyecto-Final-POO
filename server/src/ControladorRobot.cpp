@@ -76,10 +76,8 @@ string ControladorRobot::moverAPosicion(float x, float y, float z, float velocid
 }
 
 string ControladorRobot::pausar(float segundos) {
-    stringstream ss;
-    ss << "G4 S" << fixed << setprecision(2) << segundos << "\r\n";
-    string respuesta = enviarComando(ss.str());
-    return respuesta;
+    (void)segundos;
+    return "ERROR: SPEED DELAY NOT IMPLEMENTED";
 }
 
 string ControladorRobot::setModoCoordenadas(bool absoluto) {

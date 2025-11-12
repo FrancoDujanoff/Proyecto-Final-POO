@@ -49,11 +49,24 @@ bool ControladorGeneral::esAdministrador(const string& usuario) const {
     return gestorUsuarios->esAdministrador(usuario);
 }
 
-bool ControladorGeneral::crearNuevoUsuario(const string& username, const string& password, bool esAdmin) {
+bool ControladorGeneral::crearNuevoUsuario(const std::string& username, const std::string& password, bool esAdmin) {
+    // --- AÑADIR LOGS ---
+    std::string accion = "Creando usuario: " + username;
+    logger->info(accion);
+    // (Asumimos que el admin actual es "Sistema" por ahora)
+    gestorDeReportes->logActividadUsuario("Sistema/Admin", accion);
+    // --- FIN DE LOGS ---
+    
     return gestorUsuarios->crearUsuario(username, password, esAdmin);
 }
 
-bool ControladorGeneral::eliminarUnUsuario(const string& username) {
+bool ControladorGeneral::eliminarUnUsuario(const std::string& username) {
+    // --- AÑADIR LOGS ---
+    std::string accion = "Eliminando usuario: " + username;
+    logger->info(accion);
+    gestorDeReportes->logActividadUsuario("Sistema/Admin", accion);
+    // --- FIN DE LOGS ---
+
     return gestorUsuarios->eliminarUsuario(username);
 }
 
@@ -128,7 +141,7 @@ string ControladorGeneral::controlarEfector(bool estado) {
 }
 
 string ControladorGeneral::pausar(float segundos) {
-    logger->info("Ejecutando Pausa (G4)...");
+    logger->info("Comando Pausa (G4) ejecutado - (No implementado).");
     return controladorRobot->pausar(segundos);
 }
 
@@ -163,7 +176,7 @@ string ControladorGeneral::alternarAccesoRemoto() {
 
 string ControladorGeneral::solicitarReporteAdmin() {
     logger->info("Solicitando Reporte de Administrador.");
-    return gestorDeReportes->generarReporteAdmin();
+    return gestorDeReportes->generarReporteDeLog(archivoLogActividad); 
 }
 
 string ControladorGeneral::solicitarReporteLog() {

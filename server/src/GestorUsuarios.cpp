@@ -130,6 +130,6 @@ void GestorUsuarios::guardarUsuariosEnArchivo() {
                 << par.second.password << "," 
                 << (par.second.esAdmin ? "1" : "0") 
                 << "\n";
-    archivo.close();
     }
+    archivo.close();
 } 

@@ -141,10 +141,10 @@ void AdminCLI::procesarOpcion(char opcion) {
             }
             case '6':
             {
-                cout << "\n--- REPORTE DE ADMINISTRADOR (Estado Robot Actual) ---" << endl;
+                cout << "\n--- REPORTE DE ACTIVIDAD (actividad.log) ---" << endl;
                 cout << refControladorGeneral->solicitarReporteAdmin() << endl;
-                
-                cout << "\n--- LOG DEL SERVIDOR (" << /* Opcional: pasar el nombre del archivo */ ") ---" << endl;
+
+                cout << "\n--- LOG DEL SERVIDOR (servidor.log) ---" << endl;
                 cout << refControladorGeneral->solicitarReporteLog() << endl;
                 cout << "------------------------------------------" << endl;
                 break;
