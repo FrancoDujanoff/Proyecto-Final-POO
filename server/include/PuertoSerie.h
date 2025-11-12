@@ -37,7 +37,6 @@ public:
     void setPuerto(const string& dev);
     void setBaudrate(int baud);
     bool pregEstado() const { return estado; }
-    // Alias con nombre más descriptivo usado en el código
     bool estaAbierto() const { return pregEstado(); }
 };
 

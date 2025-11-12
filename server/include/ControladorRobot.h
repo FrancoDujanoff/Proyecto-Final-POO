@@ -3,13 +3,13 @@
 
 #include <string>
 #include <memory> 
+#include <cmath>
 #include "Robot.h"
 #include "PuertoSerie.h"
 
 using namespace std;
 
 class GestorDeReportes;
-
 class ControladorRobot {
 private:
     unique_ptr<Robot> robot; 
@@ -24,20 +24,22 @@ public:
     
     ControladorRobot(const string& puerto, int baudrate, GestorDeReportes* reportes);
 
-    bool conectarRobot();
+    string conectarRobot();
     void desconectarRobot();
-
-    bool habilitarMotores(bool estado);      
-    bool activarEfector(bool estado);        
-    bool moverAPosicion(float x, float y, float z, float velocidad); 
-
-    string enviarComando(const string& comando);
-
+    string habilitarMotores(bool estado);      
+    string activarEfector(bool estado);        
+    string moverAPosicion(float x, float y, float z, float velocidad);
+    string pausar(float segundos);
+    string setModoCoordenadas(bool absoluto);
+    string definirPosicionActual(float x, float y, float z, float e = NAN);
+    string controlarVentilador(bool estado);
+    string solicitarReporteEndstops();
+    string enviarComando(const string& comando, int timeout_ms = 30000);
     string solicitarReporteEstadoRobot(); 
 
     const Robot* getRobot() const { return robot.get(); } //Para obtener el estado actual del robot y sin modificarlo
 
-    bool ejecutarBloqueGCode(const string& contenidoGCode);
+    string ejecutarBloqueGCode(const string& contenidoGCode);
 };
 
 #endif

@@ -1,109 +1,58 @@
-/*
-#ifndef CONTROLADORGENERAL_H
-#define CONTROLADORGENERAL_H
-
-#include <string>
-#include <vector>
-
-class ControladorRobot;
-class GestorUsuarios;
-class GestorDeArchivos;
-class GestorDeReportes;
-class PALogger;
-
-// ControladorGeneral: orquestador principal del servidor.
-// Aquí se declaran los métodos que usa el AdminCLI.
-class ControladorGeneral {
-public:
-  ControladorGeneral();
-  virtual ~ControladorGeneral();
-
-  // Autenticación
-  bool login(const std::string& usuario, const std::string& password);
-  bool esAdministrador(const std::string& usuario) const;
-
-  // Robot
-  std::string solicitarReporteEstadoRobot();
-  void alternarConexionRobot();
-  void alternarAccesoRemoto();
-  void alternarMotores();
-  void irAHome();
-  void moverRobot(float x, float y, float z, float velocidad);
-  void alternarEfectorFinal();
-
-  // Reportes
-  std::string solicitarReporteAdmin();
-  std::string solicitarReporteLog();
-
-  // Shutdown
-  void shutdownServidor();
-
-private:
-  // Implementación pendiente: punteros/instancias a subsistemas
-  ControladorRobot* controladorRobot;
-  GestorUsuarios* gestorUsuarios;
-  GestorDeArchivos* gestorArchivos;
-  GestorDeReportes* gestorReportes;
-  PALogger* logger;
-};
-
-#endif // CONTROLADORGENERAL_H
-*/
 
 #ifndef CONTROLADORGENERAL_H
 #define CONTROLADORGENERAL_H
 
 #include <string>
 #include <vector>
-#include <memory> // <--- NECESARIO PARA unique_ptr
-#include "ControladorRobot.h" // <--- NECESARIO PARA unique_ptr
+#include <memory> 
+#include "ControladorRobot.h"
+#include "GestorUsuarios.h"
+#include "GestorDeArchivos.h" 
+#include "PALogger.h"          
+#include "GestorDeReportes.h"
 
-// Gestores que no usaremos en esta prueba (solo declaraciones)
-class GestorUsuarios;
-class GestorDeArchivos;
-class GestorDeReportes;
-class PALogger;
+using namespace std;
 
 class ControladorGeneral {
 public:
-    // Constructor ahora acepta los detalles de conexión
-    ControladorGeneral(const std::string& puerto, int baudrate);
+    ControladorGeneral(const string& puerto, int baudrate, const string& archivoUsuarios);
     virtual ~ControladorGeneral();
 
-    // --- MÉTODOS DE AUTENTICACIÓN (SIMULADOS) ---
-    bool login(const std::string& usuario, const std::string& password);
-    bool esAdministrador(const std::string& usuario) const;
+    bool login(const string& usuario, const string& password);
+    bool esAdministrador(const string& usuario) const;
+    bool crearNuevoUsuario(const string& username, const string& password, bool esAdmin);
+    bool eliminarUnUsuario(const string& username);
+    string getListaUsuarios() const;
 
-    // --- MÉTODOS DEL ROBOT (DELEGADOS) ---
-    std::string solicitarReporteEstadoRobot();
-    void alternarConexionRobot();
-    void alternarMotores();
-    void irAHome();
-    void moverRobot(float x, float y, float z, float velocidad);
-    void alternarEfectorFinal();
+    string solicitarReporteEstadoRobot();
+    string controlarConexion(bool estado);
+    string controlarMotores(bool estado);
+    string irAHome();
+    string moverRobot(float x, float y, float z, float velocidad);
+    string controlarEfector(bool estado);
 
-    // --- NUEVOS MÉTODOS DELEGADOS (DE TU ADMINCLI.CPP) ---
-    bool pausar(float segundos);
-    bool setModoCoordenadas(bool absoluto);
-    bool definirPosicionActual(float x, float y, float z, float e = NAN);
-    bool controlarVentilador(bool estado);
-    std::string solicitarReporteEndstops();
+    string pausar(float segundos);
+    string setModoCoordenadas(bool absoluto);
+    string definirPosicionActual(float x, float y, float z, float e = NAN);
+    string controlarVentilador(bool estado);
+    string solicitarReporteEndstops();
 
-    // --- MÉTODOS VACÍOS (NO REQUERIDOS PARA ESTA PRUEBA) ---
-    void alternarAccesoRemoto();
-    std::string solicitarReporteAdmin();
-    std::string solicitarReporteLog();
-    void shutdownServidor();
+    string alternarAccesoRemoto();//Es para la opcion 2 que todavia no esta implemtada
+    string solicitarReporteAdmin();
+    string solicitarReporteLog();
+    string shutdownServidor();
+
+    const Robot* getRobot() const;
 
 private:
-    // ¡Usamos un puntero inteligente!
-    std::unique_ptr<ControladorRobot> controladorRobot; 
-    
-    // Dejamos los otros como punteros nulos
-    GestorUsuarios* gestorUsuarios;
-    GestorDeArchivos* gestorArchivos;
-    GestorDeReportes* gestorReportes;
-    PALogger* logger;
+    unique_ptr<ControladorRobot> controladorRobot;
+    unique_ptr<GestorUsuarios> gestorUsuarios; 
+    unique_ptr<GestorDeArchivos> gestorDeArchivos;
+    unique_ptr<PALogger> logger;
+    unique_ptr<GestorDeReportes> gestorDeReportes;
+
+    string archivoLogSistema = "servidor.log";
+    string archivoLogActividad = "actividad.log";
 };
 
-#endif // CONTROLADORGENERAL_H
+#endif
