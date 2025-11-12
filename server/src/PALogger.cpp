@@ -1,94 +1,80 @@
 #include "PALogger.h"
-#include <algorithm>
-#include <sstream>
-#include <chrono>
-#include <iomanip>
+#include <iostream>
+#include <sstream>    // Para construir strings
+#include <chrono>     // Para la fecha y hora
+#include <iomanip>    // Para formatear la fecha y hora
 
-// Constructors/Destructors
+using namespace std;
 
-
-PALogger::PALogger()
+// Constructor
+PALogger::PALogger(GestorDeArchivos* gestor, const string& archivoLog) : logFile(archivoLog), gestorDeArchivos(gestor)
 {
-  initAttributes();
+    if (gestorDeArchivos == nullptr) {
+        // Error crítico: sin un GestorDeArchivos, el logger no puede funcionar.
+        throw runtime_error("ERROR: PALogger no puede funcionar sin un GestorDeArchivos.");
+    }
+
+    // Creamos un usuario "sistema" genérico.
+    // Lo usaremos para llamar a 'almacenarArchivo', que requiere un 'Usuario'.
+    usuarioSistema.password = "";
+    usuarioSistema.esAdmin = true; // El sistema es admin
+    
+    // Escribimos un mensaje inicial en el log
+    info("Sistema de LOG inicializado.");
 }
 
-PALogger::~PALogger()
-{
+/**
+ * Método privado que formatea y escribe el log.
+ */
+void PALogger::log(const string& nivel, const string& mensaje) {
+    // 1. Obtener la fecha y hora actual
+    auto now = chrono::system_clock::now();
+    auto time_t = chrono::system_clock::to_time_t(now);
+    
+    // Formato de hora (ej: "2025-11-11 21:17:46")
+    stringstream ss_time;
+    ss_time << put_time(localtime(&time_t), "%Y-%m-%d %H:%M:%S");
+    string timestamp = ss_time.str();
+
+    // 2. Construir el mensaje de log
+    stringstream ss_log;
+    ss_log << "[" << timestamp << "] [" << nivel << "] " << mensaje << "\n";
+    string logFormateado = ss_log.str();
+    
+    // 3. Imprimir en la consola (opcional, pero útil)
+    cout << logFormateado; 
+
+    // 4. Usar el GestorDeArchivos para guardar
+    // Usamos el 'usuarioSistema' que creamos en el constructor.
+    gestorDeArchivos->almacenarArchivo(usuarioSistema, logFile, logFormateado);
 }
 
-// Methods
+// --- Implementación de los métodos públicos del UML ---
 
-
-// Accessor methods
-
-
-
-// Other methods
-
-
-void PALogger::initAttributes()
-{
+void PALogger::info(const string& mensaje) {
+    log("INFO", mensaje);
 }
 
-void PALogger::info(const std::string& modulo, const std::string& mensaje) {
-  LogEntry e;
-  e.nivel = NivelLog::INFO;
-  e.idUsuario = 0;
-  e.timestampISO = ""; // se puede llenar con hora actual si se requiere
-  e.modulo = modulo;
-  e.mensaje = mensaje;
-  e.esError = false;
-  store.push_back(e);
+void PALogger::warning(const string& mensaje) {
+    log("WARN", mensaje);
 }
 
-void PALogger::warning(const std::string& modulo, const std::string& mensaje) {
-  LogEntry e;
-  e.nivel = NivelLog::WARNING;
-  e.idUsuario = 0;
-  e.timestampISO = "";
-  e.modulo = modulo;
-  e.mensaje = mensaje;
-  e.esError = true;
-  store.push_back(e);
+void PALogger::logEvento(const string& modulo, const string& mensaje) {
+    // Formateamos el mensaje para incluir el módulo
+    string mensajeCompleto = "[" + modulo + "] " + mensaje;
+    log("EVENT", mensajeCompleto);
 }
 
-void PALogger::logEvento(const std::string& modulo, const std::string& mensaje) {
-  info(modulo, mensaje);
+void PALogger::logPeticion(const string& timestamp, const string& usuario, 
+                           const string& nodo, const string& peticion, 
+                           const string& respuesta) {
+    
+    // (Ignoramos el timestamp de entrada y generamos uno nuevo)
+    string mensajeCompleto = "PETICION: Usuario[" + usuario + "] Nodo[" + nodo + "] "
+                                  "Peticion[" + peticion + "] Respuesta[" + respuesta + "]";
+    log("NET", mensajeCompleto);
 }
 
-void PALogger::logPeticion(const std::string& timestamp, const std::string& usuario, const std::string& nodo, const std::string& peticion, const std::string& respuesta) {
-  LogEntry e;
-  e.nivel = NivelLog::INFO;
-  e.idUsuario = 0;
-  e.timestampISO = timestamp;
-  e.modulo = nodo + "::" + usuario;
-  e.mensaje = peticion + " -> " + respuesta;
-  e.esError = false;
-  store.push_back(e);
+string PALogger::getLogFilePath() const {
+    return logFile;
 }
-
-std::vector<PALogger::LogEntry> PALogger::consultar(const FiltroLog& filtro) const {
-  std::vector<LogEntry> out;
-  for (const auto& e : store) {
-    if (filtro.idUsuario && e.idUsuario != *filtro.idUsuario) continue;
-    if (filtro.minNivel && static_cast<int>(e.nivel) < static_cast<int>(*filtro.minNivel)) continue;
-    if (filtro.contiene && e.mensaje.find(*filtro.contiene) == std::string::npos) continue;
-    // filtros de tiempo ignorados por simplicidad
-    out.push_back(e);
-  }
-  return out;
-}
-
-std::string PALogger::formatear(const PALogger::LogEntry& e) const {
-  std::ostringstream ss;
-  ss << "[" << (e.timestampISO.empty() ? "now" : e.timestampISO) << "] ";
-  switch (e.nivel) {
-    case NivelLog::DEBUG: ss << "DEBUG"; break;
-    case NivelLog::INFO: ss << "INFO"; break;
-    case NivelLog::WARNING: ss << "WARN"; break;
-    case NivelLog::ERROR: ss << "ERROR"; break;
-  }
-  ss << " " << e.modulo << " - " << e.mensaje;
-  return ss.str();
-}
-

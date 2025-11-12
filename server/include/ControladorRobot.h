@@ -8,7 +8,7 @@
 
 using namespace std;
 
-class GestorDeReportes; // forward declaration
+class GestorDeReportes;
 
 class ControladorRobot {
 private:

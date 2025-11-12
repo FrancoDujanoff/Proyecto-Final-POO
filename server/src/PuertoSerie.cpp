@@ -111,7 +111,7 @@ void PuertoSerie::escribir(const string& comando) {
 }
 
 void PuertoSerie::drenarHastaInactividad(int idle_timeout_ms, int overall_timeout_ms) {
-    (void) overall_timeout_ms; // actualmente no usado, reservado
+    (void) overall_timeout_ms;
     if (!estado || fd < 0) return;
 
     auto ms_to_timeval = [](int ms) {
@@ -137,9 +137,7 @@ void PuertoSerie::drenarHastaInactividad(int idle_timeout_ms, int overall_timeou
     }
 }
 
-string PuertoSerie::leerHastaNLineas(int n,
-                                           int idle_timeout_ms,
-                                           int overall_timeout_ms) {
+string PuertoSerie::leerHastaNLineas(int n, int idle_timeout_ms, int overall_timeout_ms) {
     if (!estado || fd < 0) {
         throw runtime_error("Puerto no abierto para leer");
     }
