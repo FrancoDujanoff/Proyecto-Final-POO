@@ -14,9 +14,9 @@
 
 using namespace std;
 
-PuertoSerie::PuertoSerie(): puerto(), baudrate(115200), fd(-1), estado(false) {}
+PuertoSerie::PuertoSerie(): puerto(), baudrate(115200), estado(false), fd(-1) {}
 
-PuertoSerie::PuertoSerie(const string& dev, int baud): puerto(dev), baudrate(baud), fd(-1), estado(false) {}
+PuertoSerie::PuertoSerie(const string& dev, int baud): puerto(dev), baudrate(baud), estado(false), fd(-1) {}
 
 PuertoSerie::~PuertoSerie() {
     try { cerrar(); } catch (...) {}

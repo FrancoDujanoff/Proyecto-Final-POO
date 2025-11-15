@@ -11,7 +11,7 @@
 
 using namespace std;
 
-ControladorGeneral::ControladorGeneral(const string& puerto, int baudrate, const string& archivoUsuarios)
+ControladorGeneral::ControladorGeneral(const string& puerto, int baudrate, const string& archivoUsuarios) : accesoRemotoHabilitado(false)
 {
     // 1. Instanciamos GestorDeUsuarios
     gestorUsuarios = make_unique<GestorUsuarios>(archivoUsuarios);
@@ -167,11 +167,17 @@ string ControladorGeneral::solicitarReporteEndstops() {
     return controladorRobot->solicitarReporteEndstops();
 }
 
-// Todavia no implemteado
 string ControladorGeneral::alternarAccesoRemoto() {
-    logger->info("Llamada a funcion stub: alternarAccesoRemoto");
-    cout << "INFO: Acceso Remoto (No implementado)" << endl;
-    return "INFO: Acceso Remoto (No implementado)";
+    // Invierte el valor booleano del miembro privado
+    accesoRemotoHabilitado = !accesoRemotoHabilitado; 
+    
+    string estado = accesoRemotoHabilitado ? "HABILITADO" : "DESHABILITADO";
+    string accionLog = "El acceso remoto ahora esta: " + estado;
+
+    logger->info(accionLog);
+    cout << "INFO: " << accionLog << endl; // Muestra en la CLI local
+    
+    return "INFO: " + accionLog;
 }
 
 string ControladorGeneral::solicitarReporteAdmin() {
@@ -185,9 +191,22 @@ string ControladorGeneral::solicitarReporteLog() {
 }
 
 string ControladorGeneral::shutdownServidor() {
-    logger->info("Llamada a funcion stub: shutdownServidor");
-    cout << "INFO: Shutdown (No implementado)" << endl; 
-    return "INFO: Shutdown (No implementado)";
+    logger->warning("=== INICIANDO APAGADO DE CONTROLADOR ===");
+    
+    // 1. Poner el hardware en estado seguro
+    // (Verificamos si el robot existe y si está conectado)
+    if (controladorRobot && controladorRobot->getRobot() && controladorRobot->getRobot()->getEstadoRobot()) {
+        logger->info("Apagando robot (M18)...");
+        controladorRobot->habilitarMotores(false); // Desactiva motores
+        
+        logger->info("Desconectando puerto serie...");
+        controladorRobot->desconectarRobot();
+    } else {
+        logger->info("El robot ya estaba desconectado. No se requieren acciones de hardware.");
+    }
+
+    logger->info("Controlador listo para terminar.");
+    return "INFO: Apagado del controlador completado.";
 }
 
 const Robot* ControladorGeneral::getRobot() const {
@@ -195,4 +214,8 @@ const Robot* ControladorGeneral::getRobot() const {
         return controladorRobot->getRobot();
     }
     return nullptr;
+}
+
+bool ControladorGeneral::estaAccesoRemotoHabilitado() const {
+    return accesoRemotoHabilitado;
 }

@@ -117,7 +117,8 @@ void ControladorRobot::parsearRespuestaYActualizar(const string& respuesta) {
     
     size_t pos_start = respuesta.find("CURRENT POSITION: [X:");
     if (pos_start != string::npos) {
-        float x_val, y_val, z_val, e_val;
+
+        float x_val, y_val, z_val;
         
         string sub_respuesta = respuesta.substr(pos_start);
         stringstream ss(sub_respuesta);
@@ -183,7 +184,6 @@ string ControladorRobot::ejecutarBloqueGCode(const string& contenidoGCode) {
     
     stringstream ss(contenidoGCode);
     string linea;
-    bool exito = true;
 
     cout << "--- Iniciando Modo Automatico (Ejecucion de Bloque G-Code) ---" << endl;
     
@@ -197,11 +197,10 @@ string ControladorRobot::ejecutarBloqueGCode(const string& contenidoGCode) {
             string respuesta = enviarComando(comandoFinal); 
 
             if (respuesta.find("ERROR") != string::npos || respuesta.find("FAILURE") != string::npos) {
-                exito = false;
                 return respuesta;
             }
         } catch (const exception& e) {
-            exito = false;
+
             return "ERROR: " + string(e.what());
         }
     }

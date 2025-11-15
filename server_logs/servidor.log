@@ -1,0 +1,22 @@
+[2025-11-15 11:54:09] [INFO] Sistema de LOG inicializado.
+[2025-11-15 11:54:09] [INFO] ControladorGeneral inicializado.
+[2025-11-15 11:54:50] [INFO] Intento de conexion al robot...
+[2025-11-15 11:54:56] [INFO] Robot conectado exitosamente.
+[2025-11-15 11:55:05] [INFO] Llamada a funcion stub: shutdownServidor
+[2025-11-15 12:49:21] [INFO] Sistema de LOG inicializado.
+[2025-11-15 12:49:21] [INFO] ControladorGeneral inicializado.
+[2025-11-15 12:49:29] [INFO] Llamada a funcion stub: alternarAccesoRemoto
+[2025-11-15 12:49:41] [INFO] Llamada a funcion stub: alternarAccesoRemoto
+[2025-11-15 12:49:43] [INFO] Llamada a funcion stub: alternarAccesoRemoto
+[2025-11-15 12:49:44] [INFO] Llamada a funcion stub: alternarAccesoRemoto
+[2025-11-15 12:49:57] [INFO] Llamada a funcion stub: shutdownServidor
+[2025-11-15 12:56:14] [INFO] Sistema de LOG inicializado.
+[2025-11-15 12:56:14] [INFO] ControladorGeneral inicializado.
+[2025-11-15 12:59:10] [INFO] El acceso remoto ahora esta: HABILITADO
+[2025-11-15 12:59:17] [INFO] Habilitar Motores
+[2025-11-15 12:59:30] [INFO] Intento de conexion al robot...
+[2025-11-15 12:59:36] [INFO] Robot conectado exitosamente.
+[2025-11-15 12:59:43] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-15 12:59:43] [INFO] Apagando robot (M18)...
+[2025-11-15 12:59:44] [INFO] Desconectando puerto serie...
+[2025-11-15 12:59:44] [INFO] Controlador listo para terminar.

@@ -44,12 +44,16 @@ public:
 
     const Robot* getRobot() const;
 
+    bool estaAccesoRemotoHabilitado() const;
+
 private:
     unique_ptr<ControladorRobot> controladorRobot;
     unique_ptr<GestorUsuarios> gestorUsuarios; 
     unique_ptr<GestorDeArchivos> gestorDeArchivos;
     unique_ptr<PALogger> logger;
     unique_ptr<GestorDeReportes> gestorDeReportes;
+
+    bool accesoRemotoHabilitado;
 
     string archivoLogSistema = "servidor.log";
     string archivoLogActividad = "actividad.log";
