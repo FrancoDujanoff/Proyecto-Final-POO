@@ -1,42 +1,56 @@
-#ifndef GESTOR_DE_REPORTES_H
-#define GESTOR_DE_REPORTES_H
+#ifndef GESTORDEREPORTE_H
+#define GESTORDEREPORTE_H
 
 #include <string>
-#include <vector>
-#include <utility>
-#include <optional>
+#include "GestorDeArchivos.h"
+#include "GestorUsuarios.h" // Para el tipo 'Usuario'
 
-#include "PALogger.h"
-class BaseDeDatos;
-class BaseDeDatos;
-class UsuarioServidor;
+using namespace std;
 
-// NOTA: NivelLog no está definido en los archivos que me diste.
-// Posiblemente falte un enum en PALogger.h o un archivo común.
-struct FiltrosReporteAdmin {
-    std::optional<int> idUsuario;
-    std::optional<NivelLog> minNivelLog;
-    std::optional<std::string> contiene;
-    std::optional<std::string> desdeISO;
-    std::optional<std::string> hastaISO;
-};
+// Declaración adelantada (Forward declaration)
+class ControladorRobot;
 
 class GestorDeReportes {
 private:
-    PALogger& logger;
-    BaseDeDatos& bd;
+    string archivoActividad; // ej. "actividad.log"
+    // Dependencias
+    GestorDeArchivos* gestorDeArchivos;
+    ControladorRobot* refControladorRobot; // Para reportar el estado del robot
+
+    Usuario usuarioSistema; // Dummy user para guardar archivos
+
+    /**
+     * @brief Escribe una línea de actividad en el log de actividad.
+     */
+    void registrarActividad(const string& usuario, const string& accion);
 
 public:
-    explicit GestorDeReportes(PALogger& l, BaseDeDatos& b);
+    /**
+     * @brief Constructor del GestorDeReportes.
+     * @param gestor Un puntero al GestorDeArchivos.
+     * @param robot Un puntero al ControladorRobot.
+     */
+    GestorDeReportes(GestorDeArchivos* gestor, ControladorRobot* robot);
 
-    std::vector<std::string> generarReporteActividad(const UsuarioServidor& usuario);
+    // --- Métodos del UML (adaptados) ---
 
-    std::vector<std::string> generarReporteAdmin(const UsuarioServidor& admin, const FiltrosReporteAdmin& filtros);
+    /**
+     * @brief Registra una acción realizada por un usuario.
+     * (Este reemplaza 'generarReporteActividad(Usuario)' del UML)
+     */
+    void logActividadUsuario(const string& username, const string& accion);
 
-    std::vector<std::string> generarReporteLog(const UsuarioServidor& admin, const FiltrosReporteAdmin& filtros);
+    /**
+     * @brief Genera un reporte administrativo (estado actual del robot).
+     * (Este es 'generarReporteAdmin' del UML)
+     */
+    string generarReporteAdmin();
 
-    GestorDeReportes(const GestorDeReportes&) = delete;
-    GestorDeReportes& operator=(const GestorDeReportes&) = delete;
+    /**
+     * @brief Obtiene el contenido del log del sistema (servidor.log).
+     * (Este es 'generarReporteDeLog' del UML)
+     */
+    string generarReporteDeLog(const string& logFileName);
 };
 
-#endif // GESTOR_DE_REPORTES_H
+#endif

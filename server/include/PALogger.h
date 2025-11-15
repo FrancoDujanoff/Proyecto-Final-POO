@@ -2,72 +2,67 @@
 #define PALOGGER_H
 
 #include <string>
-#include <vector>
-#include <optional>
-#include <chrono>
+#include "GestorDeArchivos.h" // Necesario para la dependencia
+#include "GestorUsuarios.h"   // Para el tipo 'Usuario'
 
-// Niveles de log utilizados por PALogger y GestorDeReportes
-enum class NivelLog {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR
-};
+using namespace std;
+
+// Declaración adelantada, aunque GestorUsuarios.h ya lo incluye
+class Usuario;
 
 class PALogger {
-public:
-    PALogger();
-    virtual ~PALogger();
-
-    // Niveles de log básicos
-    void info(const std::string& modulo, const std::string& mensaje);
-    void warning(const std::string& modulo, const std::string& mensaje);
-
-    // Devuelve la ruta del archivo de log (si se usa archivo)
-    std::string getLogFilePath() const;
-
-    // Eventos generales
-    void logEvento(const std::string& modulo, const std::string& mensaje);
-
-    // Traza de petición/respuesta
-    void logPeticion(const std::string& timestamp, const std::string& usuario, const std::string& nodo, const std::string& peticion, const std::string& respuesta);
-
-    // Tipos y métodos para consultas de log/reportes
-    struct LogEntry {
-        NivelLog nivel;
-        int idUsuario; // opcional: 0 si no aplica
-        std::string timestampISO;
-        std::string modulo;
-        std::string mensaje;
-        bool esError;
-    };
-
-    struct FiltroLog {
-        std::optional<int> idUsuario;
-        std::optional<NivelLog> minNivel;
-        std::optional<std::string> contiene;
-        std::optional<std::chrono::system_clock::time_point> desde;
-        std::optional<std::chrono::system_clock::time_point> hasta;
-    };
-
-    // Consultar entradas de log que cumplan filtros (retorna copia)
-    std::vector<LogEntry> consultar(const FiltroLog& filtro) const;
-
-    // Formatear una entrada de log como string legible
-    std::string formatear(const LogEntry& e) const;
-
 private:
-    std::string logFIle; // se respeta el nombre del UML
+    string logFile; // El nombre del archivo (ej: "servidor.log")
+    
+    // Una referencia al gestor que escribirá en el disco
+    GestorDeArchivos* gestorDeArchivos;
+
+    // Usuario "dummy" del sistema para llamar al GestorDeArchivos
+    // (recordemos que 'almacenarArchivo' requiere un Usuario)
+    Usuario usuarioSistema; 
+
+    /**
+     * @brief Formatea y escribe el mensaje final en el archivo.
+     * Este es el método privado que hace el trabajo real.
+     */
+    void log(const string& nivel, const string& mensaje);
 
 public:
-    void setLogFIle(const std::string& value) { logFIle = value; }
-    std::string getLogFIle() const { return logFIle; }
+    /**
+     * @brief Constructor del Logger.
+     * @param gestor Un puntero al GestorDeArchivos ya inicializado.
+     * @param archivoLog El nombre del archivo donde se guardarán los logs.
+     */
+    PALogger(GestorDeArchivos* gestor, const string& archivoLog = "servidor.log");
 
-private:
-    void initAttributes();
+    // --- Métodos del UML ---
+    
+    /**
+     * @brief Registra un mensaje de información.
+     */
+    void info(const string& mensaje);
 
-    // In-memory store minimal para desarrollo
-    std::vector<LogEntry> store;
+    /**
+     * @brief Registra un mensaje de advertencia.
+     */
+    void warning(const string& mensaje);
+
+    /**
+     * @brief Registra un evento genérico del sistema.
+     */
+    void logEvento(const string& modulo, const string& mensaje);
+
+    /**
+     * @brief Registra una petición de red (para el futuro).
+     */
+    void logPeticion(const string& timestamp, const string& usuario, 
+                   const string& nodo, const string& peticion, 
+                   const string& respuesta);
+
+    /**
+     * @brief Devuelve la ruta/nombre del archivo log.
+     */
+    string getLogFilePath() const;
 };
 
 #endif // PALOGGER_H

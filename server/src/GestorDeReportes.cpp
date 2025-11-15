@@ -1,81 +1,60 @@
+#include "GestorDeReportes.h"
+#include "ControladorRobot.h" // Necesario para la implementación
 #include <sstream>
 #include <chrono>
 #include <iomanip>
 
-#include "GestorDeReportes.h"
-#include "PALogger.h"
-#include "BaseDeDatos.h"
-#include "UsuarioServidor.h"
+using namespace std;
 
-static std::optional<std::chrono::system_clock::time_point> parseISO8601(const std::optional<std::string>& s) {
-    if (!s.has_value()) return std::nullopt;
-    std::tm tm{};
-
-
-
-
-    std::istringstream iss(*s);
-    if (s->size() == 10)
-        iss >> std::get_time(&tm, "%Y-%m-%d");
-    else
-        iss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
-
-    if (!iss.fail()) {
-        auto tt = std::mktime(&tm);
-        if (tt != -1) return std::chrono::system_clock::from_time_t(tt);
+GestorDeReportes::GestorDeReportes(GestorDeArchivos* gestor, ControladorRobot* robot) : archivoActividad("actividad.log"), gestorDeArchivos(gestor), refControladorRobot(robot)
+{
+    if (gestorDeArchivos == nullptr || refControladorRobot == nullptr) {
+        throw runtime_error("ERROR: GestorDeReportes requiere GestorDeArchivos y ControladorRobot.");
     }
-    return std::nullopt;
+
+    // Creamos un usuario "sistema" para guardar logs
+    usuarioSistema.password = "";
+    usuarioSistema.esAdmin = true;
+
+    logActividadUsuario("Sistema", "Gestor de Reportes inicializado.");
 }
 
-GestorDeReportes::GestorDeReportes(PALogger& l, BaseDeDatos& b) : logger(l), bd(b) {}
+/**
+ * Método privado que formatea y escribe el log de actividad.
+ */
+void GestorDeReportes::registrarActividad(const string& usuario, const string& accion) {
+    // 1. Obtener la fecha y hora actual
+    auto now = chrono::system_clock::now();
+    auto time_t = chrono::system_clock::to_time_t(now);
+    stringstream ss_time;
+    ss_time << put_time(localtime(&time_t), "%Y-%m-%d %H:%M:%S");
+    
+    // 2. Construir el mensaje de log
+    stringstream ss_log;
+    ss_log << "[" << ss_time.str() << "] [Usuario: " << usuario << "] " << accion << "\n";
+    string logFormateado = ss_log.str();
 
-std::vector<std::string> GestorDeReportes::generarReporteActividad(const UsuarioServidor& usuario) {
-    std::vector<std::string> out;
-    auto actividades = bd.listarActividadPorUsuario(usuario.getId());
-    out.reserve(actividades.size() + 2);
-    out.push_back("=== REPORTE DE ACTIVIDAD (Usuario: " + std::to_string(usuario.getId()) + ") ===");
-    for (const auto& a : actividades) {
-        out.push_back(a.fechaHoraISO8601 + " | " + (a.esError ? "ERROR" : "OK   ") + " | " + a.descripcion);
-    }
-    if (actividades.empty()) out.push_back("(sin actividad registrada)");
-    return out;
+    // 3. Usar el GestorDeArchivos para guardar
+    gestorDeArchivos->almacenarArchivo(usuarioSistema, archivoActividad, logFormateado);
 }
 
-std::vector<std::string> GestorDeReportes::generarReporteAdmin(const UsuarioServidor& admin, const FiltrosReporteAdmin& filtros) {
-    std::vector<std::string> out;
-    if (!admin.isAdmin()) {
-        out.push_back("[PERMISO DENEGADO] Sólo un administrador puede generar este reporte.");
-        return out;
-    }
-    auto todas = bd.listarActividadGlobal();
-    out.push_back("=== REPORTE ADMINISTRADOR: ACTIVIDAD ===");
-    for (const auto& a : todas) {
-        if (filtros.idUsuario && a.idUsuario != *filtros.idUsuario) continue;
-        if (filtros.contiene && a.descripcion.find(*filtros.contiene) == std::string::npos) continue;
-        out.push_back("usr=" + std::to_string(a.idUsuario) + " | " + a.fechaHoraISO8601 + (a.esError ? " | ERROR | " : " | OK    | ") + a.descripcion);
-    }
-    if (out.size() == 1) out.push_back("(sin resultados con esos filtros)");
-    return out;
+// --- Implementación de los métodos públicos ---
+
+void GestorDeReportes::logActividadUsuario(const string& username, const string& accion) {
+    registrarActividad(username, accion);
 }
 
-std::vector<std::string> GestorDeReportes::generarReporteLog(const UsuarioServidor& admin, const FiltrosReporteAdmin& filtros) {
-    std::vector<std::string> out;
-    if (!admin.isAdmin()) {
-        out.push_back("[PERMISO DENEGADO] Sólo un administrador puede ver el log.");
-        return out;
+string GestorDeReportes::generarReporteAdmin() {
+    // Esta función ahora simplemente obtiene el estado del robot.
+    // Asumimos que el robot está conectado.
+    try {
+        return refControladorRobot->solicitarReporteEstadoRobot();
+    } catch (const exception& e) {
+        return "ERROR al generar reporte del robot: " + string(e.what());
     }
-    PALogger::FiltroLog fLog;
-    fLog.idUsuario = filtros.idUsuario;
-    fLog.minNivel = filtros.minNivelLog;
-    fLog.contiene = filtros.contiene;
-    fLog.desde = parseISO8601(filtros.desdeISO);
-    fLog.hasta = parseISO8601(filtros.hastaISO);
+}
 
-    auto entradas = logger.consultar(fLog);
-    out.push_back("=== REPORTE ADMIN: LOG DEL SERVIDOR ===");
-    for (const auto& e : entradas) {
-        out.push_back(logger.formatear(e));
-    }
-    if (entradas.empty()) out.push_back("(sin entradas de log con esos filtros)");
-    return out;
+string GestorDeReportes::generarReporteDeLog(const string& logFileName) {
+    // Esta función lee un archivo de log del disco usando el GestorDeArchivos
+    return gestorDeArchivos->obtenerContenidoArchivo(usuarioSistema, logFileName);
 }

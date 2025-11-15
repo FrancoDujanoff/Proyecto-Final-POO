@@ -10,7 +10,7 @@ using namespace std;
 
 class AdminCLI {
 private:
-    ControladorGeneral* refControladorGeneral; 
+    ControladorGeneral* refControladorGeneral;  
 
     void mostrarEstadoGeneral() const;
     void solicitarCredenciales();
@@ -18,6 +18,7 @@ private:
     void procesarOpcion(char opcion);
     
     void menuMovimientoManual();
+    void menuGestionUsuarios();
 
 public:
     AdminCLI(ControladorGeneral* controlador);

@@ -1,69 +1,46 @@
-#ifndef GESTOR_DE_ARCHIVOS_H
-#define GESTOR_DE_ARCHIVOS_H
+#ifndef GESTORDEARCHIVOS_H
+#define GESTORDEARCHIVOS_H
 
 #include <string>
-#include <vector>
-#include <filesystem> 
+#include "GestorUsuarios.h"
 
-//Necesitamos la definición de UsuarioServidor para validar permisos
-#include "UsuarioServidor.h"
+using namespace std;
 
 class GestorDeArchivos {
 private:
-    
-    std::filesystem::path directorioBase; //Ruta base donde se guardarán los archivos G-Code
-                                         //std::filesystem::path maneja rutas de forma más robusta
+    string directorioBase;
 
-
-    std::filesystem::path obtenerRutaArchivo(const UsuarioServidor& usuario, const std::string& nombreArchivo) const;
-
-    bool crearDirectorioSiNoExiste(const std::filesystem::path& rutaDirectorio);
+    /**
+     * @brief Valida y construye una ruta de archivo segura.
+     * Previene ataques "Path Traversal" (ej. "../..").
+     * Devuelve una ruta completa o un string vacío si no es seguro.
+     */
+    string obtenerRutaSegura(const string& nombreArchivo) const;
 
 public:
-
-    //Constructor
-    explicit GestorDeArchivos(const std::string& rutaBase); //'explicit' previene conversiones implícitas
-
+    /**
+     * @brief Crea el gestor de archivos.
+     * @param dirBase El directorio raíz donde se guardarán todos los archivos.
+     */
+    GestorDeArchivos(const string& dirBase = "server_logs");
 
     /**
-     * @brief Almacena el contenido de un archivo G-Code en el directorio del usuario.
-     * @param usuario El usuario que sube el archivo.
-     * @param nombreArchivo El nombre deseado para el archivo en el servidor.
-     * @param contenido El contenido (G-Code) del archivo como string.
-     * @return true si el archivo se guardó con éxito, false en caso contrario.
-     * @throw std::runtime_error si ocurre un error grave (ej. no se puede escribir).
+     * @brief Almacena contenido en un archivo.
+     * (En esta implementación, 'usuario' no se usa, pero lo mantenemos por el UML)
      */
-    bool almacenarArchivo(const UsuarioServidor& usuario, const std::string& nombreArchivo, const std::string& contenido);
+    bool almacenarArchivo(const Usuario& usuario, const string& nombreArchivo, const string& contenido);
 
     /**
-     * @brief Valida si un usuario tiene permiso para acceder a un archivo específico.
-     * Los usuarios normales solo acceden a los suyos, el admin a cualquiera.
-     * @param usuario El usuario que intenta acceder.
-     * @param nombreArchivo El nombre del archivo a verificar.
-     * @return true si el usuario tiene permiso, false si no.
+     * @brief Valida si un archivo existe y es accesible.
+     * (En esta implementación, 'usuario' no se usa)
      */
-    bool validarAccesoArchivo(const UsuarioServidor& usuario, const std::string& nombreArchivo) const;
+    bool validarAccesoArchivo(const Usuario& usuario, const string& nombreArchivo) const;
 
     /**
-     * @brief Obtiene el contenido de un archivo G-Code.
-     * @param usuario El usuario que solicita el archivo.
-     * @param nombreArchivo El nombre del archivo a leer.
-     * @return Un string con el contenido del archivo.
-     * @throw std::runtime_error si el usuario no tiene permiso o el archivo no se encuentra/puede leer.
+     * @brief Obtiene el contenido completo de un archivo.
+     * (En esta implementación, 'usuario' no se usa)
      */
-    std::string obtenerContenidoArchivo(const UsuarioServidor& usuario, const std::string& nombreArchivo);
+    string obtenerContenidoArchivo(const Usuario& usuario, const string& nombreArchivo) const;
+};
 
-    /**
-     * @brief Lista los nombres de los archivos G-Code disponibles para un usuario.
-     * El admin ve todos los archivos, los usuarios normales solo los suyos.
-     * @param usuario El usuario para el cual listar los archivos.
-     * @return Un vector de strings con los nombres de los archivos.
-     * @throw std::runtime_error si ocurre un error al leer el directorio.
-     */
-    std::vector<std::string> listarArchivos(const UsuarioServidor& usuario) const;
-
-    ~GestorDeArchivos() = default; //Destructor por defecto
-
-}; 
-
-#endif // GESTOR_DE_ARCHIVOS_H
+#endif
