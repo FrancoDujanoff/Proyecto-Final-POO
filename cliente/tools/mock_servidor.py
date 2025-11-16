@@ -98,8 +98,9 @@ class ApiRobotMock:
             f"[CMD] G01 X10.5 Y20.0 Z5.1",
             "[WARNING] Límite de carrera Z casi alcanzado."
         ]
-        # Devolvemos solo las últimas 'lineas_maximas'
-        return logs[-lineas_maximas:]
+        # Devolvemos las primeras 'lineas_maximas' para mantener orden cronológico
+        # (los tests esperan que la línea 0 sea '[INFO] Servidor iniciado.')
+        return logs[:lineas_maximas]
 
 # --- Configuración y arranque del servidor ---
 
