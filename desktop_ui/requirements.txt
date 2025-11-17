@@ -1,7 +1,0 @@
-# Requisitos para la UI de escritorio
-# Tkinter viene incluido con Python en la mayoría de instalaciones
-# No hay dependencias externas obligatorias para el prototipo
-
-# Opcionales (si prefieres otra UI más moderna):
-# PySide6
-# PyInstaller (para crear ejecutables)
