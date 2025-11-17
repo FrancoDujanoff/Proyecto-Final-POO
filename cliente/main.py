@@ -2,6 +2,7 @@ from ClienteRPC import ClienteRPC
 from VistaGUI import VistaGUI
 
 def main():
+    
     # 1. Configuración
     # Si el servidor está en otra PC, cambie 'localhost' por la IP del servidor
     URL_SERVIDOR = "http://localhost:8080"

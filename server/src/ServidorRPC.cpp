@@ -146,7 +146,7 @@ public:
 class MetodoHome : public MetodoControlado {
 public:
     MetodoHome(XmlRpcServer* s, ControladorGeneral* c) 
-        : MetodoControlado("robot.irAHome", s, c, true) {}
+        : MetodoControlado("robot.irAHome", s, c, false) {}
 
     void executeControlado(const std::string& usuario, XmlRpcValue& params, XmlRpcValue& result) override {
         result = controlador->irAHome();

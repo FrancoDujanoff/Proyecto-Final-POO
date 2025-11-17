@@ -1,9 +1,11 @@
 import os
 
 class GestorArchivosLocal:
+
     """
     Clase auxiliar para manejar archivos en la computadora del CLIENTE.
     """
+    
     @staticmethod
     def leer_archivo(ruta_completa):
         if not os.path.exists(ruta_completa):
