@@ -44,6 +44,7 @@ public:
 
     string alternarAccesoRemoto();
     string solicitarReporteLog();
+    string solicitarReporteAdmin();
     string shutdownServidor();
 
     const Robot* getRobot() const;
