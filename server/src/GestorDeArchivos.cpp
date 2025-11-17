@@ -32,7 +32,7 @@ string GestorDeArchivos::obtenerRutaSegura(const string& nombreArchivo) const {
     return directorioBase + "/" + nombreArchivo;
 }
 
-bool GestorDeArchivos::almacenarArchivo(const Usuario& usuario, const string& nombreArchivo, const string& contenido) {
+bool GestorDeArchivos::almacenarArchivo(const RegistroUsuarioDAO& usuario, const string& nombreArchivo, const string& contenido) {
     (void)usuario; // Ignoramos el parámetro usuario como decidimos
 
     string rutaSegura = obtenerRutaSegura(nombreArchivo);
@@ -54,7 +54,7 @@ bool GestorDeArchivos::almacenarArchivo(const Usuario& usuario, const string& no
     return true;
 }
 
-bool GestorDeArchivos::validarAccesoArchivo(const Usuario& usuario, const string& nombreArchivo) const {
+bool GestorDeArchivos::validarAccesoArchivo(const RegistroUsuarioDAO& usuario, const string& nombreArchivo) const {
     (void)usuario; // Ignoramos el parámetro usuario
 
     string rutaSegura = obtenerRutaSegura(nombreArchivo);
@@ -67,7 +67,7 @@ bool GestorDeArchivos::validarAccesoArchivo(const Usuario& usuario, const string
     return archivo.good(); // Devuelve true si el archivo existe y se puede leer
 }
 
-string GestorDeArchivos::obtenerContenidoArchivo(const Usuario& usuario, const string& nombreArchivo) const {
+string GestorDeArchivos::obtenerContenidoArchivo(const RegistroUsuarioDAO& usuario, const string& nombreArchivo) const {
     (void)usuario; // Ignoramos el parámetro usuario
 
     string rutaSegura = obtenerRutaSegura(nombreArchivo);

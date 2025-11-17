@@ -1,15 +1,15 @@
 #ifndef USUARIO_SERVIDOR_H
 #define USUARIO_SERVIDOR_H
 
-#include <string> // Necesitamos std::string para el nombre y la clave (hash)
+#include <string> 
 
 class UsuarioServidor {
 private:
 
-    int id;                     // Identificador único de la base de datos
-    std::string nombreUsuario;  // Nombre de login del usuario
-    std::string claveHasheada; // IMPORTANTE: Hash de la clave, NUNCA la clave en texto plano
-    bool esAdministrador;       // Flag para indicar si es administrador o no
+    int id;                     //Identificador único de la base de datos
+    std::string nombreUsuario;  //Nombre de login del usuario
+    std::string claveHasheada; //IMPORTANTE: Hash de la clave, NUNCA la clave en texto plano
+    bool esAdministrador;       //Flag para indicar si es administrador o no
 
 public:
 

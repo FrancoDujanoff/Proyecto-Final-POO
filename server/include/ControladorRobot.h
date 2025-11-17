@@ -37,7 +37,7 @@ public:
     string enviarComando(const string& comando, int timeout_ms = 30000);
     string solicitarReporteEstadoRobot(); 
 
-    const Robot* getRobot() const { return robot.get(); } //Para obtener el estado actual del robot y sin modificarlo
+    const Robot* getRobot() const { return robot.get(); } 
 
     string ejecutarBloqueGCode(const string& contenidoGCode);
 };

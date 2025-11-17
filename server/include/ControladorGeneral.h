@@ -19,7 +19,7 @@ public:
     ControladorGeneral(
         const string& puerto, 
         int baudrate, 
-        std::unique_ptr<BaseDeDatos> db // <-- 3b. Cambiar esto
+        std::unique_ptr<BaseDeDatos> db 
     );
         virtual ~ControladorGeneral();
 
@@ -42,8 +42,7 @@ public:
     string controlarVentilador(bool estado);
     string solicitarReporteEndstops();
 
-    string alternarAccesoRemoto();//Es para la opcion 2 que todavia no esta implemtada
-    string solicitarReporteAdmin();
+    string alternarAccesoRemoto();
     string solicitarReporteLog();
     string shutdownServidor();
 

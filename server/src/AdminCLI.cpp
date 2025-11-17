@@ -191,9 +191,9 @@ void AdminCLI::procesarOpcion(char opcion) {
 void AdminCLI::menuMovimientoManual() {
     float x, y, z, segundos, velocidad = 10.0f;
     char sub_opcion;
-    bool mantener_submenu = true; // Variable para controlar el bucle
+    bool mantener_submenu = true; //Variable para controlar el bucle
 
-    // Agregamos un bucle do-while para quedarnos en este menú
+    //Agregamos un bucle do-while para quedarnos en este menú
     do {
         cout << "\n--- SUB-MENU MOVIMIENTO MANUAL ---" << endl;
         cout << "A. Mover a Home (G28)" << endl;
@@ -271,12 +271,8 @@ void AdminCLI::menuMovimientoManual() {
             cerr << "Error de Movimiento: " << e.what() << endl;
         }
 
-        // IMPORTANTE: Quitamos el cin.ignore() global que estaba aquí causando el bloqueo.
-        // Solo limpiamos si NO fue la opción B (que ya limpió)
         if (toupper(sub_opcion) != 'B' && toupper(sub_opcion) != 'V') {
-             // Un ignore condicional simple para limpiar el enter de la selección de opción
-             // si quedaron caracteres en el buffer, pero sin bloquear.
-             // En C++ simple, a veces es mejor dejar que el próximo cin >> salte el whitespace.
+             
         }
 
     } while (mantener_submenu);
@@ -294,14 +290,14 @@ void AdminCLI::menuGestionUsuarios() {
     cout << "Seleccione una opcion: ";
     cin >> sub_opcion;
 
-    // Limpiamos el buffer de entrada para getline
+    //Limpiamos el buffer de entrada para getline
     cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
 
     try {
         switch (toupper(sub_opcion)) {
             case 'A':
             {
-                // Llamamos al nuevo método en ControladorGeneral
+                //Llamamos al nuevo método en ControladorGeneral
                 cout << refControladorGeneral->getListaUsuarios() << endl;
                 break;
             }

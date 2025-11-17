@@ -10,16 +10,14 @@ using namespace std;
 PALogger::PALogger(GestorDeArchivos* gestor, const string& archivoLog) : logFile(archivoLog), gestorDeArchivos(gestor)
 {
     if (gestorDeArchivos == nullptr) {
-        // Error crítico: sin un GestorDeArchivos, el logger no puede funcionar.
         throw runtime_error("ERROR: PALogger no puede funcionar sin un GestorDeArchivos.");
     }
 
-    // Creamos un usuario "sistema" genérico.
-    // Lo usaremos para llamar a 'almacenarArchivo', que requiere un 'Usuario'.
-    usuarioSistema.password = "";
-    usuarioSistema.esAdmin = true; // El sistema es admin
+    // CAMBIO: Inicializamos el DAO
+    usuarioSistema.nombre = "Sistema";
+    usuarioSistema.claveHasheada = ""; // Ya no es 'password'
+    usuarioSistema.esAdmin = true; 
     
-    // Escribimos un mensaje inicial en el log
     info("Sistema de LOG inicializado.");
 }
 

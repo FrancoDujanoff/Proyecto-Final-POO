@@ -12,8 +12,9 @@ GestorDeReportes::GestorDeReportes(GestorDeArchivos* gestor, ControladorRobot* r
         throw runtime_error("ERROR: GestorDeReportes requiere GestorDeArchivos y ControladorRobot.");
     }
 
-    // Creamos un usuario "sistema" para guardar logs
-    usuarioSistema.password = "";
+    // CAMBIO: Inicialización del DAO
+    usuarioSistema.nombre = "Sistema";
+    usuarioSistema.claveHasheada = "";
     usuarioSistema.esAdmin = true;
 
     logActividadUsuario("Sistema", "Gestor de Reportes inicializado.");

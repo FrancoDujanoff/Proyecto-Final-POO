@@ -263,10 +263,15 @@ bool ControladorGeneral::estaAccesoRemotoHabilitado() const {
 string ControladorGeneral::guardarArchivoGCode(const string& nombre, const string& contenido) {
     string accion = "Subiendo archivo G-Code: " + nombre;
     logger->info(accion);
-    gestorDeReportes->logActividadUsuario("Sistema", accion); // O el usuario real si lo pasamos
+    
+    if (gestorDeReportes) {
+        gestorDeReportes->logActividadUsuario("Sistema", accion); 
+    }
 
-    // Usamos un usuario 'dummy' porque GestorDeArchivos lo requiere por interfaz antigua
-    Usuario dummy; 
+    // CORRECCIÓN: Usamos RegistroUsuarioDAO en lugar de Usuario
+    RegistroUsuarioDAO dummy; 
+    dummy.nombre = "Sistema"; // (Opcional, para que tenga datos)
+
     if (gestorDeArchivos->almacenarArchivo(dummy, nombre, contenido)) {
         return "INFO: Archivo '" + nombre + "' guardado exitosamente.";
     } else {
@@ -289,17 +294,21 @@ string ControladorGeneral::listarArchivosGCode() {
 string ControladorGeneral::ejecutarArchivoGCode(const string& nombre) {
     string accion = "Ejecutando archivo G-Code: " + nombre;
     logger->info(accion);
-    gestorDeReportes->logActividadUsuario("Sistema", accion);
+    
+    if (gestorDeReportes) {
+        gestorDeReportes->logActividadUsuario("Sistema", accion);
+    }
 
-    // 1. Leer contenido del archivo
-    Usuario dummy;
+    // CORRECCIÓN: Usamos RegistroUsuarioDAO en lugar de Usuario
+    RegistroUsuarioDAO dummy;
+    dummy.nombre = "Sistema";
+
     string contenido = gestorDeArchivos->obtenerContenidoArchivo(dummy, nombre);
     
     if (contenido.find("ERROR") != string::npos) {
         return "ERROR: No se pudo leer el archivo " + nombre;
     }
 
-    // 2. Pasar el contenido al Robot para ejecución paso a paso
     return controladorRobot->ejecutarBloqueGCode(contenido);
 }
 

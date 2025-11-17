@@ -4,13 +4,10 @@
 #include <string>
 #include <thread> // Necesitaremos std::thread para ejecutar el servidor en segundo plano
 
-// Declaraciones adelantadas (Forward Declarations)
-// Evitamos incluir los headers completos de la biblioteca aquí
 namespace XmlRpc {
     class XmlRpcServer;
 }
 
-// Evitamos incluir el header de nuestro controlador aquí
 class ControladorGeneral;
 
 /**
@@ -72,7 +69,6 @@ public:
      */
     void apagar();
 
-    // Evitamos copias para esta clase
     ServidorRPC(const ServidorRPC&) = delete;
     ServidorRPC& operator=(const ServidorRPC&) = delete;
 };

@@ -6,19 +6,14 @@
 #include <stdexcept> // Para excepciones estándar
 #include <typeinfo>  // Para typeid
 
-//Este es un enum que se crea con codigos de mensajes específicos para la comunicación
-//entre el servidor y los clientes. Cada código representa un tipo particular de mensaje
-//o una respuesta que el servidor puede enviar al cliente. 
-//Falta especificar cuales van a ser exactamente, hay puestos ejemplos
 enum class CodigoMensaje {
-    // Peticiones del Cliente (Ejemplos)
+    //Peticiones del Cliente
     PETICION_LOGIN,
     PETICION_MOVER_ROBOT,
     PETICION_SUBIR_GCODE,
     PETICION_LISTAR_ARCHIVOS,
-    // ... otros comandos ...
 
-    // Respuestas del Servidor (Ejemplos)
+    // Respuestas del Servidor 
     RESPUESTA_OK,
     RESPUESTA_ERROR_AUTENTICACION,
     RESPUESTA_ERROR_PERMISOS,
@@ -26,9 +21,7 @@ enum class CodigoMensaje {
     RESPUESTA_ERROR_ARCHIVO_NO_ENCONTRADO,
     RESPUESTA_ERROR_COMANDO_INVALIDO,
     RESPUESTA_DATOS_REPORTE,
-    // ... otros estados/errores ...
 
-    // Códigos genéricos
     ERROR_DESCONOCIDO = -1
 };
 

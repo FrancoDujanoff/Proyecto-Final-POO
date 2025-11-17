@@ -4,8 +4,7 @@
 #include <string>
 #include <iostream>
  
-class ControladorGeneral; //Forma para declarar una clase sin incluir su header, y para no generar un bucle.
-
+class ControladorGeneral; 
 using namespace std;
 
 class AdminCLI {
@@ -23,7 +22,7 @@ private:
 public:
     AdminCLI(ControladorGeneral* controlador);
 
-    void iniciarSesion(); //Llama a todos los metodos privados
+    void iniciarSesion();
 };
 
 #endif

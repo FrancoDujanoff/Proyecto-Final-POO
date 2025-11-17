@@ -1,12 +1,10 @@
 #ifndef GESTOR_USUARIOS_MYSQL_H
 #define GESTOR_USUARIOS_MYSQL_H
 
-#include "BaseDeDatos.h" // ¡Heredamos de la interfaz existente!
+#include "BaseDeDatos.h" 
 #include <string>
-#include <memory>       // Para std::unique_ptr
+#include <memory>       
 
-// --- Declaraciones adelantadas del Conector MySQL ---
-// (Evitamos incluir los headers pesados de MySQL aquí)
 namespace sql {
     class Connection;
     class Driver;
@@ -20,11 +18,12 @@ namespace sql {
  */
 class GestorUsuariosMySQL : public BaseDeDatos {
 private:
-    // --- Miembros del Conector MySQL ---
-    sql::Driver* driver;
-    std::unique_ptr<sql::Connection> con; // unique_ptr para gestión RAII
 
-    // --- Detalles de Conexión ---
+    //Miembros del Conector MySQL
+    sql::Driver* driver;
+    std::unique_ptr<sql::Connection> con; 
+
+    //Detalles de Conexión
     std::string db_host;
     std::string db_user;
     std::string db_pass;
@@ -36,6 +35,7 @@ private:
     void conectar();
 
 public:
+
     /**
      * @brief Constructor que establece la conexión.
      */
@@ -51,10 +51,7 @@ public:
      */
     virtual ~GestorUsuariosMySQL();
 
-    // --- Implementación de la Interfaz BaseDeDatos ---
-    // (Note el uso de 'override' para asegurar la correctitud polimórfica)
-
-    // Usuarios
+    //Usuarios
     std::optional<RegistroUsuarioDAO> buscarUsuarioPorNombre(const std::string& nombre) const override;
     std::optional<RegistroUsuarioDAO> buscarUsuarioPorId(int id) const override;
     bool crearUsuario(const RegistroUsuarioDAO& u) override;
@@ -64,12 +61,12 @@ public:
 
     std::vector<RegistroUsuarioDAO> listarUsuarios() const override;
 
-    // Actividad
+    //Actividad
     bool registrarActividad(const RegistroActividadDAO& a) override;
     std::vector<RegistroActividadDAO> listarActividadPorUsuario(int idUsuario) const override;
     std::vector<RegistroActividadDAO> listarActividadGlobal() const override;
 
-    // Evitamos copias
+    //Evitamos copias
     GestorUsuariosMySQL(const GestorUsuariosMySQL&) = delete;
     GestorUsuariosMySQL& operator=(const GestorUsuariosMySQL&) = delete;
 };

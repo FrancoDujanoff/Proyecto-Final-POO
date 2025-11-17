@@ -3,21 +3,21 @@
 
 #include <string>
 #include "GestorDeArchivos.h"
-#include "GestorUsuarios.h" // Para el tipo 'Usuario'
+#include "BaseDeDatos.h"
 
 using namespace std;
 
-// Declaración adelantada (Forward declaration)
 class ControladorRobot;
 
 class GestorDeReportes {
 private:
-    string archivoActividad; // ej. "actividad.log"
+    string archivoActividad; 
+
     // Dependencias
     GestorDeArchivos* gestorDeArchivos;
     ControladorRobot* refControladorRobot; // Para reportar el estado del robot
 
-    Usuario usuarioSistema; // Dummy user para guardar archivos
+    RegistroUsuarioDAO usuarioSistema; 
 
     /**
      * @brief Escribe una línea de actividad en el log de actividad.
@@ -36,19 +36,16 @@ public:
 
     /**
      * @brief Registra una acción realizada por un usuario.
-     * (Este reemplaza 'generarReporteActividad(Usuario)' del UML)
      */
     void logActividadUsuario(const string& username, const string& accion);
 
     /**
      * @brief Genera un reporte administrativo (estado actual del robot).
-     * (Este es 'generarReporteAdmin' del UML)
      */
     string generarReporteAdmin();
 
     /**
      * @brief Obtiene el contenido del log del sistema (servidor.log).
-     * (Este es 'generarReporteDeLog' del UML)
      */
     string generarReporteDeLog(const string& logFileName);
 };
