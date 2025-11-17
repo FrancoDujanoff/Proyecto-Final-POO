@@ -32,6 +32,9 @@ public:
     virtual bool crearUsuario(const RegistroUsuarioDAO& u) = 0;
     virtual bool actualizarUsuario(const RegistroUsuarioDAO& u) = 0;
 
+    virtual bool eliminarUsuarioPorNombre(const std::string& nombre) = 0;
+    virtual std::vector<RegistroUsuarioDAO> listarUsuarios() const = 0;
+
     // Actividad
     virtual bool registrarActividad(const RegistroActividadDAO& a) = 0;
     virtual std::vector<RegistroActividadDAO> listarActividadPorUsuario(int idUsuario) const = 0;

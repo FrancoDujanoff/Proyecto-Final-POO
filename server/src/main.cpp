@@ -1,47 +1,80 @@
-#include "ControladorGeneral.h" 
-#include "AdminCLI.h"           
-#include "ServidorRPC.h"        // <-- AÑADIR ESTO
 #include <iostream>             
-#include <thread>               // <-- AÑADIR ESTO
-#include <memory>               // <-- AÑADIR ESTO (para make_unique)
+#include <string>               
+#include <memory>               // Para std::unique_ptr, std::make_unique
+#include <thread>               // Para std::thread
+
+#include "ControladorGeneral.h" // El orquestador principal
+#include "AdminCLI.h"           // La vista local
+#include "ServidorRPC.h"        // La vista de red
+#include "BaseDeDatos.h"         // La interfaz de persistencia
+#include "GestorUsuariosMySQL.h" // La implementación de persistencia
 
 using namespace std;
 
+// --- Constantes del Robot ---
 const string PUERTO_ROBOT = "/dev/ttyACM0"; 
 const int BAUDRATE_ROBOT = 115200;
-const string ARCHIVO_USUARIOS = "usuarios.db";
+
+// --- Constantes de Red ---
 const int PUERTO_RPC = 8080; // Puerto para que se conecten los clientes Python
 
+// --- Constantes de Base de Datos ---
+// (Estas son las que creó en los pasos de MySQL)
+const string DB_HOST = "localhost"; // O "127.0.0.1"
+const string DB_USER = "robot_admin";
+const string DB_PASS = "unaClaveMuySegura123!"; // ¡DEBE CAMBIAR ESTO POR SU CLAVE REAL!
+const string DB_SCHEMA = "robot_db";
+
+
 int main() {
+    cout << "--- Iniciando Servidor del Robot ---" << endl;
+    
     try {
-        // 1. Crear el controlador (Lógica de Negocio)
-        // Usamos make_unique para la gestión moderna de memoria
-        auto controlador = make_unique<ControladorGeneral>(PUERTO_ROBOT, BAUDRATE_ROBOT, ARCHIVO_USUARIOS);
+        // --- 1. CAPA DE PERSISTENCIA ---
+        // Creamos la instancia concreta de la base de datos
+        auto miDB = make_unique<GestorUsuariosMySQL>(DB_HOST, DB_USER, DB_PASS, DB_SCHEMA);
+        cout << "INFO (main): Objeto GestorUsuariosMySQL creado." << endl;
 
-        // 2. Crear el servidor de red (Capa de Red)
+        // --- 2. CAPA DE LÓGICA (Inyección de Dependencia) ---
+        // Creamos el controlador principal.
+        // Inyectamos la base de datos (miDB) en el controlador.
+        // 'std::move' transfiere la propiedad de 'miDB' al 'controlador'.
+        auto controlador = make_unique<ControladorGeneral>(
+            PUERTO_ROBOT, 
+            BAUDRATE_ROBOT, 
+            std::move(miDB) 
+        );
+        cout << "INFO (main): ControladorGeneral creado e inicializado." << endl;
+
+        // --- 3. CAPA DE RED (Multihilo) ---
+        // Creamos el servidor RPC, pasándole una referencia al controlador
         auto servidorRPC = make_unique<ServidorRPC>(controlador.get());
+        cout << "INFO (main): ServidorRPC creado." << endl;
 
-        // 3. Iniciar el servidor de red EN UN HILO SEPARADO
-        // Si no se inicia en un hilo, bloqueará la AdminCLI
+        // Iniciamos el servidor de red EN UN HILO SEPARADO.
         servidorRPC->iniciar(PUERTO_RPC);
+        // (El servidor RPC ahora está escuchando en el puerto 8080 en segundo plano)
 
-        // 4. Iniciar la CLI local (Capa de Vista Local)
-        // Esto se ejecuta en el hilo principal
+        // --- 4. CAPA DE VISTA LOCAL (Hilo Principal) ---
+        // Iniciamos la CLI local en el Hilo Principal
+        // Esto 'bloqueará' el hilo 'main' aquí, esperando la entrada del admin.
         AdminCLI cli(controlador.get());
-        cli.iniciarSesion(); // Esto bloqueará el hilo principal hasta que el admin salga con 's' o 'q'
+        cli.iniciarSesion(); 
 
-        // 5. Cuando la CLI termina (ej. el admin presionó 's'),
-        //    iniciamos el apagado del servidor de red.
+        // --- 5. SECUENCIA DE APAGADO ---
+        // Cuando 'cli.iniciarSesion()' retorna (porque el admin presionó 's' o 'q'),
+        // el hilo 'main' continúa y comienza el apagado ordenado.
+        
         cout << "INFO (main): AdminCLI ha terminado. Apagando servidor RPC..." << endl;
-        servidorRPC->apagar();
-        // El controlador se destruye aquí automáticamente (gracias a unique_ptr)
-        // y su destructor llama a apagar() por si acaso.
+        servidorRPC->apagar(); // Esto espera (join) a que el hilo de red termine.
 
     } catch (const exception& e) {
-        cerr << "Error fatal en el servidor (main): " << e.what() << endl;
-        return 1;
+        // Captura errores fatales de inicialización 
+        // (ej. no pudo conectar a MySQL o al puerto serie)
+        cerr << "ERROR FATAL EN EL SERVIDOR (main): " << e.what() << endl;
+        return 1; // Termina con código de error
     }
     
     cout << "INFO (main): Servidor finalizado limpiamente." << endl;
-    return 0;
+    return 0; // Salida exitosa
 }

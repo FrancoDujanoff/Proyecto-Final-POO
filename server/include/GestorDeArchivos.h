@@ -2,6 +2,7 @@
 #define GESTORDEARCHIVOS_H
 
 #include <string>
+#include <vector>
 #include "GestorUsuarios.h"
 
 using namespace std;
@@ -41,6 +42,11 @@ public:
      * (En esta implementación, 'usuario' no se usa)
      */
     string obtenerContenidoArchivo(const Usuario& usuario, const string& nombreArchivo) const;
+    /**
+     * @brief Devuelve una lista con los nombres de archivos en el directorio base.
+     */
+    vector<string> listarArchivos() const;
+
 };
 
 #endif

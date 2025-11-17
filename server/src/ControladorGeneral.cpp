@@ -1,78 +1,152 @@
-
 #include <iostream>
 #include "ControladorGeneral.h"
 #include "ControladorRobot.h" 
-#include "GestorUsuarios.h"
+#include "BaseDeDatos.h"      
 #include "GestorDeArchivos.h"  
 #include "PALogger.h"          
 #include "GestorDeReportes.h"
+#include "sha256.h"           
 #include <sstream>
 #include <cmath>
 
 using namespace std;
 
-ControladorGeneral::ControladorGeneral(const string& puerto, int baudrate, const string& archivoUsuarios) : accesoRemotoHabilitado(false)
-{
-    // 1. Instanciamos GestorDeUsuarios
-    gestorUsuarios = make_unique<GestorUsuarios>(archivoUsuarios);
+// --- IMPLEMENTACIÓN SEGURA DEL HASHER ---
+string ControladorGeneral::hashPassword(const string& clavePlana) const {
+    // Convertimos a vector para compatibilidad con picosha2
+    std::vector<unsigned char> bytes(clavePlana.begin(), clavePlana.end());
+    return picosha2::hash256_hex_string(bytes);
+}
 
-    // 2. Instanciamos el GestorDeArchivos (usará "server_logs" por defecto)
+// --- CONSTRUCTOR ---
+ControladorGeneral::ControladorGeneral(const string& puerto, int baudrate, std::unique_ptr<BaseDeDatos> db)
+    : gestorDeDatos(std::move(db)), 
+      accesoRemotoHabilitado(true)   
+{
     gestorDeArchivos = make_unique<GestorDeArchivos>();
 
-    // 3. Instanciamos el PALogger (le pasamos el gestor de archivos)
     try {
         logger = make_unique<PALogger>(gestorDeArchivos.get(), archivoLogSistema);
     } catch (const exception& e) {
         cerr << "ERROR CRITICO AL INICIAR LOGGER: " << e.what() << endl;
-        // El programa podría terminar aquí si el logger es esencial
     }
 
-    // 4. Instanciamos el ControladorRobot
     controladorRobot = make_unique<ControladorRobot>(puerto, baudrate, nullptr);
 
-    // 5. Instanciamos GestorDeReportes (le pasamos el gestor de archivos y el robot)
     try {
         gestorDeReportes = make_unique<GestorDeReportes>(gestorDeArchivos.get(), controladorRobot.get());
     } catch (const exception& e) {
         cerr << "ERROR CRITICO AL INICIAR REPORTES: " << e.what() << endl;
     }
 
-    logger->info("ControladorGeneral inicializado.");
+    // Crear admin por defecto si no existe en la BD
+    if (!gestorDeDatos->buscarUsuarioPorNombre("admin").has_value()) {
+        logger->warning("No se encontró el usuario 'admin'. Creando uno por defecto (admin/admin123).");
+        crearNuevoUsuario("admin", "admin123", true);
+    }
+
+    logger->info("ControladorGeneral inicializado con BaseDeDatos.");
 }
+
 ControladorGeneral::~ControladorGeneral() {}
 
+// --- MÉTODOS DE USUARIO Y SEGURIDAD ---
+
 bool ControladorGeneral::login(const string& usuario, const string& password) {
-    return gestorUsuarios->validarUsuario(usuario, password);
+    auto daoOpt = gestorDeDatos->buscarUsuarioPorNombre(usuario);
+    if (!daoOpt.has_value()) {
+        return false; 
+    }
+    
+    string hashIngresado = hashPassword(password);
+    return (hashIngresado == daoOpt->claveHasheada);
 }
 
 bool ControladorGeneral::esAdministrador(const string& usuario) const {
-    return gestorUsuarios->esAdministrador(usuario);
+    auto daoOpt = gestorDeDatos->buscarUsuarioPorNombre(usuario);
+    if (!daoOpt.has_value()) {
+        return false;
+    }
+    return daoOpt->esAdmin;
 }
 
 bool ControladorGeneral::crearNuevoUsuario(const std::string& username, const std::string& password, bool esAdmin) {
-    // --- AÑADIR LOGS ---
-    std::string accion = "Creando usuario: " + username;
+    string accion = "Creando usuario: " + username;
     logger->info(accion);
-    // (Asumimos que el admin actual es "Sistema" por ahora)
-    gestorDeReportes->logActividadUsuario("Sistema/Admin", accion);
-    // --- FIN DE LOGS ---
     
-    return gestorUsuarios->crearUsuario(username, password, esAdmin);
+    // REGISTRO DE ACTIVIDAD -> ARCHIVO (vía GestorDeReportes)
+    if (gestorDeReportes) {
+        gestorDeReportes->logActividadUsuario("Sistema/Admin", accion);
+    }
+
+    RegistroUsuarioDAO nuevoUsuario;
+    nuevoUsuario.nombre = username;
+    nuevoUsuario.esAdmin = esAdmin;
+    
+    // Hashear contraseña
+    try {
+        nuevoUsuario.claveHasheada = hashPassword(password);
+    } catch (const exception& e) {
+        logger->warning("Error al hashear password: " + string(e.what()));
+        return false;
+    }
+
+    if (!gestorDeDatos) return false;
+
+    // PERSISTENCIA DE USUARIO -> MySQL
+    return gestorDeDatos->crearUsuario(nuevoUsuario);
 }
 
 bool ControladorGeneral::eliminarUnUsuario(const std::string& username) {
-    // --- AÑADIR LOGS ---
-    std::string accion = "Eliminando usuario: " + username;
+    string accion = "Eliminando usuario: " + username;
     logger->info(accion);
-    gestorDeReportes->logActividadUsuario("Sistema/Admin", accion);
-    // --- FIN DE LOGS ---
+    
+    // REGISTRO DE ACTIVIDAD -> ARCHIVO
+    if (gestorDeReportes) {
+        gestorDeReportes->logActividadUsuario("Sistema/Admin", accion);
+    }
 
-    return gestorUsuarios->eliminarUsuario(username);
+    if (username == "admin" || esAdministrador(username)) {
+         auto lista = gestorDeDatos->listarUsuarios();
+         int adminCount = 0;
+         for(const auto& u : lista) {
+             if (u.esAdmin) adminCount++;
+         }
+         if (adminCount <= 1) {
+             logger->warning("Intento de borrar al último administrador denegado.");
+             return false;
+         }
+    }
+
+    // PERSISTENCIA -> MySQL
+    return gestorDeDatos->eliminarUsuarioPorNombre(username);
 }
 
 string ControladorGeneral::getListaUsuarios() const {
-    return gestorUsuarios->listarUsuarios();
+    stringstream ss;
+    ss << "--- Lista de Usuarios (Base de Datos) ---" << std::endl;
+    
+    auto lista = gestorDeDatos->listarUsuarios();
+    
+    for (const auto& u : lista) {
+        ss << "- " << u.nombre 
+           << " (ID: " << u.id 
+           << ", Rol: " << (u.esAdmin ? "Admin" : "Usuario") << ")" 
+           << std::endl;
+    }
+    return ss.str();
 }
+
+string ControladorGeneral::alternarAccesoRemoto() {
+    accesoRemotoHabilitado = !accesoRemotoHabilitado; 
+    string estado = accesoRemotoHabilitado ? "HABILITADO" : "DESHABILITADO";
+    string accionLog = "El acceso remoto ahora esta: " + estado;
+
+    logger->info(accionLog);
+    return "INFO: " + accionLog;
+}
+
+// --- RESTO DE MÉTODOS (Sin cambios, solo para referencia) ---
 
 string ControladorGeneral::solicitarReporteEstadoRobot() {
     return controladorRobot->solicitarReporteEstadoRobot();
@@ -80,23 +154,18 @@ string ControladorGeneral::solicitarReporteEstadoRobot() {
 
 string ControladorGeneral::controlarConexion(bool estado) {
     string respuesta;
-    
-    if (estado == true) { // Conectar
+    if (estado) { 
         logger->info("Intento de conexion al robot...");
         const Robot* robot = controladorRobot->getRobot();
-        if (robot && robot->getEstadoRobot()) {
-            return "INFO: El robot ya esta conectado.";
-        }
-        
+        if (robot && robot->getEstadoRobot()) return "INFO: El robot ya esta conectado.";
         respuesta = controladorRobot->conectarRobot();
-        
         if (respuesta.find("ERROR") == string::npos) {
             logger->info("Robot conectado exitosamente.");
             gestorDeReportes->logActividadUsuario("Sistema", "Robot conectado.");
         } else {
             logger->warning("Falla al conectar el robot: " + respuesta);
         }
-    } else { // Desconectar
+    } else { 
         logger->info("Desconectando el robot...");
         controladorRobot->desconectarRobot();
         respuesta = "INFO: Robot Desconectado.";
@@ -109,26 +178,20 @@ string ControladorGeneral::controlarMotores(bool estado) {
     string accion = estado ? "Habilitar Motores" : "Deshabilitar Motores";
     logger->info(accion);
     gestorDeReportes->logActividadUsuario("Sistema", accion);
-    
     return controladorRobot->habilitarMotores(estado);
 }
 
 string ControladorGeneral::irAHome() {
     logger->info("Enviando comando Home (G28)...");
     gestorDeReportes->logActividadUsuario("Sistema", "Comando Home (G28).");
-    // Usamos el timeout por defecto de 30s de enviarComando
     return controladorRobot->enviarComando("G28\r\n");
-
 }
 
 string ControladorGeneral::moverRobot(float x, float y, float z, float velocidad) {
     stringstream ss;
     ss << "Movimiento G1 a X:" << x << " Y:" << y << " Z:" << z;
-    string accion = ss.str();
-    
-    logger->info(accion);
-    gestorDeReportes->logActividadUsuario("Sistema", accion);
-
+    logger->info(ss.str());
+    gestorDeReportes->logActividadUsuario("Sistema", ss.str());
     return controladorRobot->moverAPosicion(x, y, z, velocidad);
 }
 
@@ -136,7 +199,6 @@ string ControladorGeneral::controlarEfector(bool estado) {
     string accion = estado ? "Activar Efector" : "Desactivar Efector";
     logger->info(accion);
     gestorDeReportes->logActividadUsuario("Sistema", accion);
-
     return controladorRobot->activarEfector(estado);
 }
 
@@ -167,19 +229,6 @@ string ControladorGeneral::solicitarReporteEndstops() {
     return controladorRobot->solicitarReporteEndstops();
 }
 
-string ControladorGeneral::alternarAccesoRemoto() {
-    // Invierte el valor booleano del miembro privado
-    accesoRemotoHabilitado = !accesoRemotoHabilitado; 
-    
-    string estado = accesoRemotoHabilitado ? "HABILITADO" : "DESHABILITADO";
-    string accionLog = "El acceso remoto ahora esta: " + estado;
-
-    logger->info(accionLog);
-    cout << "INFO: " << accionLog << endl; // Muestra en la CLI local
-    
-    return "INFO: " + accionLog;
-}
-
 string ControladorGeneral::solicitarReporteAdmin() {
     logger->info("Solicitando Reporte de Administrador.");
     return gestorDeReportes->generarReporteDeLog(archivoLogActividad); 
@@ -192,30 +241,119 @@ string ControladorGeneral::solicitarReporteLog() {
 
 string ControladorGeneral::shutdownServidor() {
     logger->warning("=== INICIANDO APAGADO DE CONTROLADOR ===");
-    
-    // 1. Poner el hardware en estado seguro
-    // (Verificamos si el robot existe y si está conectado)
     if (controladorRobot && controladorRobot->getRobot() && controladorRobot->getRobot()->getEstadoRobot()) {
         logger->info("Apagando robot (M18)...");
-        controladorRobot->habilitarMotores(false); // Desactiva motores
-        
+        controladorRobot->habilitarMotores(false);
         logger->info("Desconectando puerto serie...");
         controladorRobot->desconectarRobot();
-    } else {
-        logger->info("El robot ya estaba desconectado. No se requieren acciones de hardware.");
     }
-
     logger->info("Controlador listo para terminar.");
     return "INFO: Apagado del controlador completado.";
 }
 
 const Robot* ControladorGeneral::getRobot() const {
-    if (controladorRobot) {
-        return controladorRobot->getRobot();
-    }
+    if (controladorRobot) return controladorRobot->getRobot();
     return nullptr;
 }
 
 bool ControladorGeneral::estaAccesoRemotoHabilitado() const {
     return accesoRemotoHabilitado;
+}
+
+string ControladorGeneral::guardarArchivoGCode(const string& nombre, const string& contenido) {
+    string accion = "Subiendo archivo G-Code: " + nombre;
+    logger->info(accion);
+    gestorDeReportes->logActividadUsuario("Sistema", accion); // O el usuario real si lo pasamos
+
+    // Usamos un usuario 'dummy' porque GestorDeArchivos lo requiere por interfaz antigua
+    Usuario dummy; 
+    if (gestorDeArchivos->almacenarArchivo(dummy, nombre, contenido)) {
+        return "INFO: Archivo '" + nombre + "' guardado exitosamente.";
+    } else {
+        return "ERROR: No se pudo guardar el archivo.";
+    }
+}
+
+string ControladorGeneral::listarArchivosGCode() {
+    logger->info("Listando archivos G-Code disponibles...");
+    vector<string> archivos = gestorDeArchivos->listarArchivos();
+    
+    stringstream ss;
+    ss << "Archivos disponibles:\n";
+    for (const auto& arch : archivos) {
+        ss << " - " << arch << "\n";
+    }
+    return ss.str();
+}
+
+string ControladorGeneral::ejecutarArchivoGCode(const string& nombre) {
+    string accion = "Ejecutando archivo G-Code: " + nombre;
+    logger->info(accion);
+    gestorDeReportes->logActividadUsuario("Sistema", accion);
+
+    // 1. Leer contenido del archivo
+    Usuario dummy;
+    string contenido = gestorDeArchivos->obtenerContenidoArchivo(dummy, nombre);
+    
+    if (contenido.find("ERROR") != string::npos) {
+        return "ERROR: No se pudo leer el archivo " + nombre;
+    }
+
+    // 2. Pasar el contenido al Robot para ejecución paso a paso
+    return controladorRobot->ejecutarBloqueGCode(contenido);
+}
+
+string ControladorGeneral::iniciarAprendizaje() {
+    modoAprendizajeActivo = true;
+    bufferTrayectoria.str(""); // Limpiar buffer
+    bufferTrayectoria.clear();
+    
+    logger->info("Iniciando Modo Aprendizaje de Trayectoria.");
+    return "INFO: Modo Aprendizaje ACTIVADO. Mueva el robot y registre puntos.";
+}
+
+string ControladorGeneral::registrarPuntoActual() {
+    if (!modoAprendizajeActivo) {
+        return "ERROR: No esta en modo aprendizaje.";
+    }
+    
+    const Robot* r = controladorRobot->getRobot();
+    if (!r) return "ERROR: Estado del robot desconocido.";
+
+    // Formatear como comando G1 (Movimiento lineal)
+    stringstream ss;
+    ss << "G1 X" << r->getPosX() 
+       << " Y" << r->getPosY() 
+       << " Z" << r->getPosZ() 
+       << " F1000" // Velocidad por defecto segura
+       << "\n"; // G-Code requiere salto de línea
+       
+    bufferTrayectoria << ss.str();
+    
+    string msg = "Punto registrado: " + ss.str();
+    // Quitamos el salto de línea para el log
+    if (!msg.empty() && msg.back() == '\n') msg.pop_back(); 
+    
+    logger->info(msg);
+    return "INFO: " + msg;
+}
+
+string ControladorGeneral::finalizarAprendizaje(const string& nombreArchivo) {
+    if (!modoAprendizajeActivo) {
+        return "ERROR: No hay aprendizaje activo para guardar.";
+    }
+
+    string contenido = bufferTrayectoria.str();
+    if (contenido.empty()) {
+        modoAprendizajeActivo = false;
+        return "WARN: Trayectoria vacia. Nada guardado.";
+    }
+
+    // Usamos el método de guardar archivo que ya creamos
+    string resultado = guardarArchivoGCode(nombreArchivo, contenido);
+    
+    modoAprendizajeActivo = false;
+    logger->info("Modo Aprendizaje finalizado. Archivo: " + nombreArchivo);
+    
+    return resultado;
 }

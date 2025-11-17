@@ -3,6 +3,9 @@
 #include <sstream>   // Para leer archivos a string (stringstream)
 #include <iostream>  // Para logs de error
 #include <sys/stat.h> // Para mkdir
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 using namespace std;
 
@@ -83,4 +86,20 @@ string GestorDeArchivos::obtenerContenidoArchivo(const Usuario& usuario, const s
     archivo.close();
     
     return buffer.str();
+}
+
+
+vector<string> GestorDeArchivos::listarArchivos() const {
+    vector<string> lista;
+    try {
+        // Iterar sobre el directorio
+        for (const auto& entry : fs::directory_iterator(directorioBase)) {
+            if (entry.is_regular_file()) {
+                lista.push_back(entry.path().filename().string());
+            }
+        }
+    } catch (const fs::filesystem_error& e) {
+        cerr << "ERROR al listar archivos: " << e.what() << endl;
+    }
+    return lista;
 }

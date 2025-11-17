@@ -209,6 +209,90 @@ public:
     }
 };
 
+class MetodoSubirArchivo : public MetodoControlado {
+public:
+    MetodoSubirArchivo(XmlRpcServer* s, ControladorGeneral* c) 
+        : MetodoControlado("robot.subirArchivo", s, c, false) {} // false = cualquier usuario
+
+    // params[2] = nombre_archivo, params[3] = contenido_texto
+    void executeControlado(const std::string& usuario, XmlRpcValue& params, XmlRpcValue& result) override {
+        if (params.size() != 4) throw XmlRpcException("robot.subirArchivo requiere: user, pass, nombre, contenido.");
+        
+        std::string nombre = params[2];
+        std::string contenido = params[3];
+        
+        // Registramos que FUE este usuario quien subió el archivo
+        std::string logMsg = "Usuario '" + usuario + "' subio archivo: " + nombre;
+        // (Opcional: podríamos pasar el usuario al controlador para loguear mejor)
+        
+        result = controlador->guardarArchivoGCode(nombre, contenido);
+    }
+};
+
+// --- Adaptador: Listar Archivos ---
+class MetodoListarArchivos : public MetodoControlado {
+public:
+    MetodoListarArchivos(XmlRpcServer* s, ControladorGeneral* c) 
+        : MetodoControlado("robot.listarArchivos", s, c, false) {}
+
+    void executeControlado(const std::string& usuario, XmlRpcValue& params, XmlRpcValue& result) override {
+        // No requiere params extra
+        result = controlador->listarArchivosGCode();
+    }
+};
+
+// --- Adaptador: Ejecutar Archivo (Modo Automático) ---
+class MetodoEjecutarArchivo : public MetodoControlado {
+public:
+    MetodoEjecutarArchivo(XmlRpcServer* s, ControladorGeneral* c) 
+        : MetodoControlado("robot.ejecutarArchivo", s, c, false) {} // Puede ser restringido a admin si se desea
+
+    // params[2] = nombre_archivo
+    void executeControlado(const std::string& usuario, XmlRpcValue& params, XmlRpcValue& result) override {
+        if (params.size() != 3) throw XmlRpcException("robot.ejecutarArchivo requiere: user, pass, nombre.");
+        
+        std::string nombre = params[2];
+        result = controlador->ejecutarArchivoGCode(nombre);
+    }
+};
+
+// --- Adaptador: Iniciar Aprendizaje ---
+class MetodoIniciarAprendizaje : public MetodoControlado {
+public:
+    MetodoIniciarAprendizaje(XmlRpcServer* s, ControladorGeneral* c) 
+        : MetodoControlado("robot.iniciarAprendizaje", s, c, false) {}
+
+    void executeControlado(const std::string& usuario, XmlRpcValue& params, XmlRpcValue& result) override {
+        // Params: user, pass
+        result = controlador->iniciarAprendizaje();
+    }
+};
+
+// --- Adaptador: Registrar Punto ---
+class MetodoRegistrarPunto : public MetodoControlado {
+public:
+    MetodoRegistrarPunto(XmlRpcServer* s, ControladorGeneral* c) 
+        : MetodoControlado("robot.registrarPunto", s, c, false) {}
+
+    void executeControlado(const std::string& usuario, XmlRpcValue& params, XmlRpcValue& result) override {
+        // Params: user, pass
+        result = controlador->registrarPuntoActual();
+    }
+};
+
+// --- Adaptador: Guardar Trayectoria ---
+class MetodoGuardarTrayectoria : public MetodoControlado {
+public:
+    MetodoGuardarTrayectoria(XmlRpcServer* s, ControladorGeneral* c) 
+        : MetodoControlado("robot.guardarTrayectoria", s, c, false) {}
+
+    // params[2] = nombre_archivo
+    void executeControlado(const std::string& usuario, XmlRpcValue& params, XmlRpcValue& result) override {
+        if (params.size() != 3) throw XmlRpcException("Requiere: user, pass, nombre_archivo.");
+        std::string nombre = params[2];
+        result = controlador->finalizarAprendizaje(nombre);
+    }
+};
 
 // (AQUÍ SE AÑADIRÍAN MÁS ADAPTADORES PARA CADA FUNCIÓN: crearUsuario, getLista, etc.)
 
@@ -251,7 +335,14 @@ void ServidorRPC::registrarMetodos() {
     servidorXmlRpc->addMethod(new MetodoReporteEstado(servidorXmlRpc.get(), refControladorGeneral));
     
     // (AQUÍ SE REGISTRARÍAN LOS OTROS MÉTODOS CREADOS...)
+    servidorXmlRpc->addMethod(new MetodoSubirArchivo(servidorXmlRpc.get(), refControladorGeneral));
+    servidorXmlRpc->addMethod(new MetodoListarArchivos(servidorXmlRpc.get(), refControladorGeneral));
+    servidorXmlRpc->addMethod(new MetodoEjecutarArchivo(servidorXmlRpc.get(), refControladorGeneral));
     
+    servidorXmlRpc->addMethod(new MetodoIniciarAprendizaje(servidorXmlRpc.get(), refControladorGeneral));
+    servidorXmlRpc->addMethod(new MetodoRegistrarPunto(servidorXmlRpc.get(), refControladorGeneral));
+    servidorXmlRpc->addMethod(new MetodoGuardarTrayectoria(servidorXmlRpc.get(), refControladorGeneral));
+
     std::cout << "INFO: Métodos XML-RPC registrados." << std::endl;
 }
 
@@ -329,3 +420,4 @@ void ServidorRPC::apagar() {
 
     // El unique_ptr de servidorXmlRpc se encargará de destruirlo.
 }
+

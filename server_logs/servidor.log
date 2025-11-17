@@ -20,3 +20,28 @@
 [2025-11-15 12:59:43] [INFO] Apagando robot (M18)...
 [2025-11-15 12:59:44] [INFO] Desconectando puerto serie...
 [2025-11-15 12:59:44] [INFO] Controlador listo para terminar.
+[2025-11-16 20:12:43] [INFO] Sistema de LOG inicializado.
+[2025-11-16 20:12:43] [WARN] No se encontró el usuario 'admin'. Creando uno por defecto (admin/admin123).
+[2025-11-16 20:12:43] [INFO] Creando usuario: admin
+[2025-11-16 20:18:37] [INFO] Sistema de LOG inicializado.
+[2025-11-16 20:18:37] [WARN] No se encontró el usuario 'admin'. Creando uno por defecto (admin/admin123).
+[2025-11-16 20:18:37] [INFO] Creando usuario: admin
+[2025-11-16 20:21:39] [INFO] Sistema de LOG inicializado.
+[2025-11-16 20:21:39] [WARN] No se encontró el usuario 'admin'. Creando uno por defecto (admin/admin123).
+[2025-11-16 20:21:39] [INFO] Creando usuario: admin
+[2025-11-16 20:30:29] [INFO] Sistema de LOG inicializado.
+[2025-11-16 20:30:29] [WARN] No se encontró el usuario 'admin'. Creando uno por defecto (admin/admin123).
+[2025-11-16 20:30:29] [INFO] Creando usuario: admin
+[2025-11-16 20:30:29] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-16 20:31:19] [INFO] Creando usuario: cliente1
+[2025-11-16 20:35:00] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-16 20:35:00] [INFO] El robot ya estaba desconectado. No se requieren acciones de hardware.
+[2025-11-16 20:35:00] [INFO] Controlador listo para terminar.
+[2025-11-16 20:41:46] [INFO] Sistema de LOG inicializado.
+[2025-11-16 20:41:46] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-16 20:41:53] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-16 20:41:53] [INFO] Controlador listo para terminar.
+[2025-11-16 22:19:21] [INFO] Sistema de LOG inicializado.
+[2025-11-16 22:19:21] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-16 22:19:34] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-16 22:19:34] [INFO] Controlador listo para terminar.
