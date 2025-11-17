@@ -1,0 +1,93 @@
+GUIA PARA EJECUTAR
+
+1 Actualizamos el sistema
+
+sudo apt update
+sudo apt upgrade -y
+
+2 Instalamos MySQL y Librerias
+
+sudo apt install -y build-essential mysql-server libmysqlcppconn-dev libxmlrpc-c-dev python3-tk
+
+3 Verificamos que MySQL este corriendo
+
+sudo systemctl start mysql
+sudo systemctl enable mysql
+sudo systemctl status mysql
+
+4 Crear la base de datos, poner cada uno de los comandos
+
+sudo mysql
+(Todo el bloque siguiente va junto)
+-- 1. Crear Base de Datos
+CREATE DATABASE IF NOT EXISTS robot_db;
+
+-- 2. Crear Usuario del Sistema (Ajustado para autenticación nativa)
+CREATE USER IF NOT EXISTS 'robot_admin'@'localhost' IDENTIFIED WITH mysql_native_password BY 'unaClaveMuySegura123!';
+
+-- 3. Dar permisos
+GRANT ALL PRIVILEGES ON robot_db.* TO 'robot_admin'@'localhost';
+FLUSH PRIVILEGES;
+
+-- 4. Seleccionar la BD
+USE robot_db;
+
+-- 5. Crear Tabla de Usuarios
+CREATE TABLE IF NOT EXISTS usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    clave_hash VARCHAR(255) NOT NULL,
+    es_admin BOOLEAN NOT NULL DEFAULT 0
+);
+
+-- 6. Crear Tabla de Actividad (Logs)
+CREATE TABLE IF NOT EXISTS actividad (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    descripcion TEXT NOT NULL,
+    fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
+    es_error BOOLEAN DEFAULT 0,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE SET NULL
+);
+
+-- Salir
+EXIT;
+(FIN DEL BLOQUE QUE VA JUNTO)
+
+5 Abrir una terminal en la carpeta raiz del proyecto y abrir el servidor
+
+sudo ./servidor_rpc_app
+
+6 Abrir otra terminal en la carpeta raiz y abrir el cliente
+
+python3 cliente/main.py
+
+7 Opcional, si se quiere compilar denuevo en Servidor el siguiente comando
+
+g++ server/src/main.cpp \
+    server/src/ControladorGeneral.cpp \
+    server/src/AdminCLI.cpp \
+    server/src/ServidorRPC.cpp \
+    server/src/ControladorRobot.cpp \
+    server/src/GestorUsuariosMySQL.cpp \
+    server/src/GestorDeArchivos.cpp \
+    server/src/GestorDeReportes.cpp \
+    server/src/PALogger.cpp \
+    server/src/PuertoSerie.cpp \
+    server/src/Robot.cpp \
+    server/src/UsuarioServidor.cpp \
+    server/src/MensajeServidor.cpp \
+    server/src/BaseDeDatos.cpp \
+    lib/XmlRpcServer.cpp \
+    lib/XmlRpcServerConnection.cpp \
+    lib/XmlRpcValue.cpp \
+    lib/XmlRpcDispatch.cpp \
+    lib/XmlRpcSocket.cpp \
+    lib/XmlRpcUtil.cpp \
+    lib/XmlRpcServerMethod.cpp \
+    lib/XmlRpcSource.cpp \
+    -Iserver/include \
+    -Ilib \
+    -o servidor_rpc_app \
+    -std=c++17 -Wall -pthread \
+    -lmysqlcppconn
