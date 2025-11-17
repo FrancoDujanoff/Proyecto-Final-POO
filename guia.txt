@@ -7,13 +7,15 @@ sudo apt upgrade -y
 
 2 Instalamos MySQL y Librerias
 
-sudo apt install -y build-essential mysql-server libmysqlcppconn-dev libxmlrpc-c-dev python3-tk
+sudo apt install -y build-essential mysql-server libmysqlcppconn-dev libxmlrpc-c++8-dev python3-tk
 
 3 Verificamos que MySQL este corriendo
 
 sudo systemctl start mysql
 sudo systemctl enable mysql
 sudo systemctl status mysql
+
+(Para salir apretar la letra "q")
 
 4 Crear la base de datos, poner cada uno de los comandos
 
