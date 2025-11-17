@@ -191,105 +191,95 @@ void AdminCLI::procesarOpcion(char opcion) {
 void AdminCLI::menuMovimientoManual() {
     float x, y, z, segundos, velocidad = 10.0f;
     char sub_opcion;
-    
-    cout << "\n--- SUB-MENU MOVIMIENTO MANUAL ---" << endl;
-    cout << "A. Mover a Home (G28)" << endl;
-    cout << "B. Mover a Posicion (G1)" << endl;
-    cout << "C. Controlar Pinza (M3/M5)" << endl;
-    cout << "D. Pausar (G4)" << endl;
-    cout << "E. Definir Posicion Actual (G92)" << endl;        
-    cout << "F. Cambiar Modo Coordenadas (G90/G91)" << endl; 
-    cout << "V. Volver al Menu Principal" << endl;
-    cout << "Seleccione una opcion: ";
-    cin >> sub_opcion;
-    
-    try {
-        switch (toupper(sub_opcion)) {
-            case 'a':
-            case 'A':
-            {
-                cout << refControladorGeneral->irAHome() << endl; 
-                break;
-            }
-            case 'b':
-            case 'B':
-            {
-                cout << "Ingrese X: "; cin >> x;
-                cout << "Ingrese Y: "; cin >> y;
-                cout << "Ingrese Z: "; cin >> z;
-                cout << "Ingrese Velocidad (opcional, default 10.0): "; 
-    
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-                
-                string vel_input;
-                
-                getline(cin, vel_input); 
+    bool mantener_submenu = true; // Variable para controlar el bucle
 
-                if (!vel_input.empty()) {
-                    try {
-                        velocidad = stof(vel_input);
-                    } catch (const exception& e) {
-                        cout << "Valor de velocidad invalido, usando default 10.0" << endl;
-                    }
-                }
-                
-                cout << refControladorGeneral->moverRobot(x, y, z, velocidad) << endl;
-                break;
-            }
-            case 'c':
-            case 'C':
-            {
-                cout << "Desea (a)ctivar o (d)esactivar la pinza? ";
-                char sub_op;
-                cin >> sub_op;
-                if(tolower(sub_op) == 'a') {
-                    cout << refControladorGeneral->controlarEfector(true) << endl;
-                } else if (tolower(sub_op) == 'd') {
-                    cout << refControladorGeneral->controlarEfector(false) << endl;
-                }
-                break;
-            }
-            case 'd':
-            case 'D':
-            {
-                cout << "Ingrese segundos para pausar: "; cin >> segundos;
-                cout << refControladorGeneral->pausar(segundos) << endl;
-                break;
-            }
-            case 'e':
-            case 'E':
-            {
-                cout << "Ingrese nueva X actual: "; cin >> x;
-                cout << "Ingrese nueva Y actual: "; cin >> y;
-                cout << "Ingrese nueva Z actual: "; cin >> z;
-                cout << refControladorGeneral->definirPosicionActual(x, y, z) << endl;
-                break;
-                break;
-            }
-            case 'f':
-            case 'F':
-            {
-                cout << "Seleccione modo: (a)bsoluto o (r)elativo? ";
-                char modo;
-                cin >> modo;
-                if (tolower(modo) == 'a') {
-                    refControladorGeneral->setModoCoordenadas(true);
-                } else if (tolower(modo) == 'r') {
-                    refControladorGeneral->setModoCoordenadas(false);
-                }
-                break;
-            }
-            case 'v':
-            case 'V':
-                break;
-            default:
-                cout << "Opcion de movimiento no valida." << endl;
-        }
+    // Agregamos un bucle do-while para quedarnos en este menú
+    do {
+        cout << "\n--- SUB-MENU MOVIMIENTO MANUAL ---" << endl;
+        cout << "A. Mover a Home (G28)" << endl;
+        cout << "B. Mover a Posicion (G1)" << endl;
+        cout << "C. Controlar Pinza (M3/M5)" << endl;
+        cout << "D. Pausar (G4)" << endl;
+        cout << "E. Definir Posicion Actual (G92)" << endl;        
+        cout << "F. Cambiar Modo Coordenadas (G90/G91)" << endl; 
+        cout << "V. Volver al Menu Principal" << endl;
+        cout << "Seleccione una opcion: ";
         
-    } catch (const exception& e) {
-        cerr << "Error de Movimiento: " << e.what() << endl;
-    }
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin >> sub_opcion;
+
+        try {
+            switch (toupper(sub_opcion)) {
+                case 'A':
+                    cout << refControladorGeneral->irAHome() << endl; 
+                    break;
+                case 'B':
+                    cout << "Ingrese X: "; cin >> x;
+                    cout << "Ingrese Y: "; cin >> y;
+                    cout << "Ingrese Z: "; cin >> z;
+                    cout << "Ingrese Velocidad (Enter para default 10.0): "; 
+        
+                    // Limpieza específica para leer la velocidad opcional
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+                    {
+                        string vel_input;
+                        getline(cin, vel_input); 
+                        if (!vel_input.empty()) {
+                            try {
+                                velocidad = stof(vel_input);
+                            } catch (...) {}
+                        }
+                    }
+                    cout << refControladorGeneral->moverRobot(x, y, z, velocidad) << endl;
+                    break;
+                case 'C':
+                    {
+                        cout << "Desea (a)ctivar o (d)esactivar la pinza? ";
+                        char sub_p;
+                        cin >> sub_p;
+                        if(tolower(sub_p) == 'a') cout << refControladorGeneral->controlarEfector(true) << endl;
+                        else if(tolower(sub_p) == 'd') cout << refControladorGeneral->controlarEfector(false) << endl;
+                    }
+                    break;
+                case 'D':
+                    cout << "Ingrese segundos para pausar: "; cin >> segundos;
+                    cout << refControladorGeneral->pausar(segundos) << endl;
+                    break;
+                case 'E':
+                    cout << "Ingrese nueva X actual: "; cin >> x;
+                    cout << "Ingrese nueva Y actual: "; cin >> y;
+                    cout << "Ingrese nueva Z actual: "; cin >> z;
+                    cout << refControladorGeneral->definirPosicionActual(x, y, z) << endl;
+                    break;
+                case 'F':
+                    {
+                        cout << "Seleccione modo: (a)bsoluto o (r)elativo? ";
+                        char modo;
+                        cin >> modo;
+                        if (tolower(modo) == 'a') refControladorGeneral->setModoCoordenadas(true);
+                        else if (tolower(modo) == 'r') refControladorGeneral->setModoCoordenadas(false);
+                        cout << "Modo actualizado." << endl;
+                    }
+                    break;
+                case 'V':
+                    mantener_submenu = false; // Salir del bucle
+                    break;
+                default:
+                    cout << "Opcion de movimiento no valida." << endl;
+            }
+            
+        } catch (const exception& e) {
+            cerr << "Error de Movimiento: " << e.what() << endl;
+        }
+
+        // IMPORTANTE: Quitamos el cin.ignore() global que estaba aquí causando el bloqueo.
+        // Solo limpiamos si NO fue la opción B (que ya limpió)
+        if (toupper(sub_opcion) != 'B' && toupper(sub_opcion) != 'V') {
+             // Un ignore condicional simple para limpiar el enter de la selección de opción
+             // si quedaron caracteres en el buffer, pero sin bloquear.
+             // En C++ simple, a veces es mejor dejar que el próximo cin >> salte el whitespace.
+        }
+
+    } while (mantener_submenu);
 }
 
 void AdminCLI::menuGestionUsuarios() {

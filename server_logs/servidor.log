@@ -45,3 +45,107 @@
 [2025-11-16 22:19:21] [INFO] ControladorGeneral inicializado con BaseDeDatos.
 [2025-11-16 22:19:34] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
 [2025-11-16 22:19:34] [INFO] Controlador listo para terminar.
+[2025-11-16 23:55:13] [INFO] Sistema de LOG inicializado.
+[2025-11-16 23:55:13] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-16 23:56:54] [INFO] Activar Efector
+[2025-11-16 23:57:48] [INFO] El acceso remoto ahora esta: DESHABILITADO
+[2025-11-16 23:57:51] [INFO] El acceso remoto ahora esta: HABILITADO
+[2025-11-16 23:57:57] [INFO] Intento de conexion al robot...
+[2025-11-16 23:58:02] [INFO] Robot conectado exitosamente.
+[2025-11-16 23:58:13] [INFO] Habilitar Motores
+[2025-11-16 23:58:23] [INFO] Encender Ventilador (M106)
+[2025-11-16 23:58:29] [INFO] Activar Efector
+[2025-11-16 23:58:34] [INFO] Desactivar Efector
+[2025-11-17 00:00:17] [INFO] Iniciando Modo Aprendizaje de Trayectoria.
+[2025-11-17 00:00:58] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-17 00:00:58] [INFO] Apagando robot (M18)...
+[2025-11-17 00:00:59] [INFO] Desconectando puerto serie...
+[2025-11-17 00:00:59] [INFO] Controlador listo para terminar.
+[2025-11-17 00:10:58] [INFO] Sistema de LOG inicializado.
+[2025-11-17 00:10:58] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-17 00:11:24] [INFO] Intento de conexion al robot...
+[2025-11-17 00:11:30] [INFO] Robot conectado exitosamente.
+[2025-11-17 00:11:39] [INFO] Habilitar Motores
+[2025-11-17 00:11:47] [INFO] Encender Ventilador (M106)
+[2025-11-17 00:11:59] [INFO] Enviando comando Home (G28)...
+[2025-11-17 00:12:20] [INFO] Movimiento G1 a X:1 Y:2 Z:3
+[2025-11-17 00:13:10] [INFO] Enviando comando Home (G28)...
+[2025-11-17 00:13:21] [INFO] Activar Efector
+[2025-11-17 00:13:39] [INFO] Movimiento G1 a X:1 Y:1 Z:1
+[2025-11-17 00:14:33] [INFO] Definiendo posicion actual (G92)...
+[2025-11-17 00:14:38] [INFO] Solicitando reporte de Endstops (M119)...
+[2025-11-17 00:14:51] [INFO] Solicitando Reporte de Administrador.
+[2025-11-17 00:14:51] [INFO] Solicitando Log del Sistema.
+[2025-11-17 00:15:01] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-17 00:15:01] [INFO] Apagando robot (M18)...
+[2025-11-17 00:15:02] [INFO] Desconectando puerto serie...
+[2025-11-17 00:15:02] [INFO] Controlador listo para terminar.
+[2025-11-17 00:28:14] [INFO] Sistema de LOG inicializado.
+[2025-11-17 00:28:14] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-17 00:28:23] [INFO] El acceso remoto ahora esta: DESHABILITADO
+[2025-11-17 00:28:26] [INFO] El acceso remoto ahora esta: HABILITADO
+[2025-11-17 00:28:29] [INFO] Intento de conexion al robot...
+[2025-11-17 00:28:35] [INFO] Robot conectado exitosamente.
+[2025-11-17 00:28:41] [INFO] Habilitar Motores
+[2025-11-17 00:29:09] [INFO] Activar Efector
+[2025-11-17 00:29:13] [INFO] Desactivar Efector
+[2025-11-17 00:29:46] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-17 00:29:46] [INFO] Apagando robot (M18)...
+[2025-11-17 00:29:46] [INFO] Desconectando puerto serie...
+[2025-11-17 00:29:46] [INFO] Controlador listo para terminar.
+[2025-11-17 00:36:45] [INFO] Sistema de LOG inicializado.
+[2025-11-17 00:36:45] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-17 00:37:09] [INFO] Intento de conexion al robot...
+[2025-11-17 00:37:15] [INFO] Robot conectado exitosamente.
+[2025-11-17 00:37:23] [INFO] Habilitar Motores
+[2025-11-17 00:37:44] [INFO] Activar Efector
+[2025-11-17 00:37:48] [INFO] Desactivar Efector
+[2025-11-17 00:37:51] [INFO] Encender Ventilador (M106)
+[2025-11-17 00:37:53] [INFO] Apagar Ventilador (M107)
+[2025-11-17 00:37:56] [INFO] Solicitando reporte de Endstops (M119)...
+[2025-11-17 00:38:01] [INFO] Modo Absoluto (G90)
+[2025-11-17 00:38:40] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-17 00:38:40] [INFO] Apagando robot (M18)...
+[2025-11-17 00:38:41] [INFO] Desconectando puerto serie...
+[2025-11-17 00:38:41] [INFO] Controlador listo para terminar.
+[2025-11-17 01:13:26] [INFO] Sistema de LOG inicializado.
+[2025-11-17 01:13:26] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-17 01:13:53] [INFO] Intento de conexion al robot...
+[2025-11-17 01:13:59] [INFO] Robot conectado exitosamente.
+[2025-11-17 01:14:07] [INFO] Habilitar Motores
+[2025-11-17 01:14:34] [INFO] Solicitando reporte de Endstops (M119)...
+[2025-11-17 01:16:14] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-17 01:16:14] [INFO] Apagando robot (M18)...
+[2025-11-17 01:16:15] [INFO] Desconectando puerto serie...
+[2025-11-17 01:16:15] [INFO] Controlador listo para terminar.
+[2025-11-17 01:17:43] [INFO] Sistema de LOG inicializado.
+[2025-11-17 01:17:43] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-17 01:17:53] [INFO] Activar Efector
+[2025-11-17 01:17:57] [INFO] Desactivar Efector
+[2025-11-17 01:18:15] [INFO] Intento de conexion al robot...
+[2025-11-17 01:18:21] [INFO] Robot conectado exitosamente.
+[2025-11-17 01:18:25] [INFO] Habilitar Motores
+[2025-11-17 01:18:41] [INFO] Solicitando reporte de Endstops (M119)...
+[2025-11-17 01:18:45] [INFO] Modo Absoluto (G90)
+[2025-11-17 01:18:47] [INFO] Modo Relativo (G91)
+[2025-11-17 01:18:49] [INFO] Modo Absoluto (G90)
+[2025-11-17 01:18:50] [INFO] Solicitando reporte de Endstops (M119)...
+[2025-11-17 01:18:52] [INFO] Encender Ventilador (M106)
+[2025-11-17 01:18:54] [INFO] Apagar Ventilador (M107)
+[2025-11-17 01:23:17] [WARN] === INICIANDO APAGADO DE CONTROLADOR ===
+[2025-11-17 01:23:17] [INFO] Apagando robot (M18)...
+[2025-11-17 01:23:17] [INFO] Desconectando puerto serie...
+[2025-11-17 01:23:17] [INFO] Controlador listo para terminar.
+[2025-11-17 01:27:38] [INFO] Sistema de LOG inicializado.
+[2025-11-17 01:27:38] [INFO] ControladorGeneral inicializado con BaseDeDatos.
+[2025-11-17 01:28:40] [INFO] Intento de conexion al robot...
+[2025-11-17 01:28:45] [INFO] Robot conectado exitosamente.
+[2025-11-17 01:28:50] [INFO] Habilitar Motores
+[2025-11-17 01:29:12] [INFO] Movimiento G1 a X:2 Y:1 Z:3
+[2025-11-17 01:29:15] [INFO] Activar Efector
+[2025-11-17 01:29:22] [INFO] Encender Ventilador (M106)
+[2025-11-17 01:29:28] [INFO] Activar Efector
+[2025-11-17 01:29:33] [INFO] Solicitando reporte de Endstops (M119)...
+[2025-11-17 01:32:01] [INFO] Movimiento G1 a X:2 Y:1 Z:3
+[2025-11-17 01:32:27] [INFO] Solicitando reporte de Endstops (M119)...
+[2025-11-17 01:32:32] [INFO] Solicitando reporte de Endstops (M119)...

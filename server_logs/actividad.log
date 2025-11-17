@@ -15,3 +15,42 @@
 [2025-11-16 20:31:19] [Usuario: Sistema/Admin] Creando usuario: cliente1
 [2025-11-16 20:41:46] [Usuario: Sistema] Gestor de Reportes inicializado.
 [2025-11-16 22:19:21] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-16 23:55:13] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-16 23:56:54] [Usuario: Sistema] Activar Efector
+[2025-11-16 23:58:02] [Usuario: Sistema] Robot conectado.
+[2025-11-16 23:58:13] [Usuario: Sistema] Habilitar Motores
+[2025-11-16 23:58:29] [Usuario: Sistema] Activar Efector
+[2025-11-16 23:58:34] [Usuario: Sistema] Desactivar Efector
+[2025-11-17 00:10:58] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-17 00:11:30] [Usuario: Sistema] Robot conectado.
+[2025-11-17 00:11:39] [Usuario: Sistema] Habilitar Motores
+[2025-11-17 00:11:59] [Usuario: Sistema] Comando Home (G28).
+[2025-11-17 00:12:20] [Usuario: Sistema] Movimiento G1 a X:1 Y:2 Z:3
+[2025-11-17 00:13:10] [Usuario: Sistema] Comando Home (G28).
+[2025-11-17 00:13:21] [Usuario: Sistema] Activar Efector
+[2025-11-17 00:13:39] [Usuario: Sistema] Movimiento G1 a X:1 Y:1 Z:1
+[2025-11-17 00:28:14] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-17 00:28:35] [Usuario: Sistema] Robot conectado.
+[2025-11-17 00:28:41] [Usuario: Sistema] Habilitar Motores
+[2025-11-17 00:29:09] [Usuario: Sistema] Activar Efector
+[2025-11-17 00:29:13] [Usuario: Sistema] Desactivar Efector
+[2025-11-17 00:36:45] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-17 00:37:15] [Usuario: Sistema] Robot conectado.
+[2025-11-17 00:37:23] [Usuario: Sistema] Habilitar Motores
+[2025-11-17 00:37:44] [Usuario: Sistema] Activar Efector
+[2025-11-17 00:37:48] [Usuario: Sistema] Desactivar Efector
+[2025-11-17 01:13:26] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-17 01:13:59] [Usuario: Sistema] Robot conectado.
+[2025-11-17 01:14:07] [Usuario: Sistema] Habilitar Motores
+[2025-11-17 01:17:43] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-17 01:17:53] [Usuario: Sistema] Activar Efector
+[2025-11-17 01:17:57] [Usuario: Sistema] Desactivar Efector
+[2025-11-17 01:18:21] [Usuario: Sistema] Robot conectado.
+[2025-11-17 01:18:25] [Usuario: Sistema] Habilitar Motores
+[2025-11-17 01:27:38] [Usuario: Sistema] Gestor de Reportes inicializado.
+[2025-11-17 01:28:45] [Usuario: Sistema] Robot conectado.
+[2025-11-17 01:28:50] [Usuario: Sistema] Habilitar Motores
+[2025-11-17 01:29:12] [Usuario: Sistema] Movimiento G1 a X:2 Y:1 Z:3
+[2025-11-17 01:29:15] [Usuario: Sistema] Activar Efector
+[2025-11-17 01:29:28] [Usuario: Sistema] Activar Efector
+[2025-11-17 01:32:01] [Usuario: Sistema] Movimiento G1 a X:2 Y:1 Z:3
